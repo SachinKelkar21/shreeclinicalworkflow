@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/admin_layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit User</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active"></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Edit User</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')" 
+                        	role="form" 
+                        	action="#" 
+                        	th:action="@{/admin/user/save}" 
+                        	th:object="${user}" 
+                        	method="post">
+                            <div class="card-body">
+            					<div class="form-group">
+                                    <label for="userId1">User Id</label>
+                                    <input type="text" class="form-control" id="id1"  th:field="*{id}" readonly="readonly">
+                                </div>
+                                <div class="form-group">
+                                    <label for="userName1">User Name</label>
+                                    <input type="text" class="form-control" id="userName1" th:field="*{name}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="userPassword1">Password</label>
+                                    <input type="password" class="form-control" id="userPassword1" th:field="*{password}">
+                                </div>
+                                <div class="form-check">
+                                	<label class="form-check-label" for="enabledCheck1">Enabled</label>
+                                    <input type="checkbox" class="form-check-input" id="enabledCheck1" th:field="*{enabled}">
+	                            </div>
+	                            <div class="form-group">
+							    <label for="roles1">Roles:</label>
+							        <input type="checkbox" name="roles"
+							            th:each="role : ${allRoles}"
+							            th:text="${role.name}"
+							            th:value="${role.id}"
+							            th:field="*{roles}"
+							        />&nbsp;&nbsp;&nbsp;&nbsp;
+							    
+								</div>
+                            </div>
+                            <!-- /.card-body -->
+
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        console.log("Add User");
+    </script>
+</th:block>
+
+</body>
+</html>

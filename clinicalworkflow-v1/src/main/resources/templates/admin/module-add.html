@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/admin_layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Module</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active"></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Add Module</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form sec:authorize="hasAnyAuthority('SUPERADMIN')" role="form" action="#" th:action="@{/admin/module}" th:object="${module}" method="post">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="doorNo1">Door No</label>
+                                    <input type="text" class="form-control" id="doorNo1" placeholder="Enter Module Door No" th:field="*{doorNo}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="macAddress1">MacAddress</label>
+                                    <input type="text" class="form-control" id="macAddress1" placeholder="Enter MacAddress" th:field="*{macAddress}">
+                                </div>
+                                <input type="hidden" th:field="*{activationDate}" />
+                                
+                            </div>
+                            <div "card-body">
+                            <table>
+								<thead>
+								<tr>
+								<th>Rfid Reader No</th>
+								<th>
+								<button type="submit" name="addRow" >Add row</button>
+								</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr th:each="rfidReader,rfidReaderStat : *{rfidReaders}">
+								<td th:text="${rfidReaderStat.count}">1</td>
+								<td>
+									<input type="text" th:field="*{rfidReaders[__${rfidReaderStat.index}__].readerNo}" />
+								</td>
+								<td>
+									<input type="hidden" th:field="*{rfidReaders[__${rfidReaderStat.index}__].activationDate}" />
+									
+								</td>
+								<td>
+									<button type="submit" name="removeRow" th:value="${rfidReaderStat.index}" >Remove row</button>
+								</td>
+								</tr>
+								</tbody>
+							</table>
+                            </div>
+                            <!-- /.card-body -->
+
+                            <div class="card-footer">
+                                <button type="submit" name="save" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        console.log("Add Module");
+    </script>
+</th:block>
+
+</body>
+</html>

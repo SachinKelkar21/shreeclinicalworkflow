@@ -1,0 +1,141 @@
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/admin/dashboard" class="brand-link">
+        <img src="/admin/dist/img/shree.png" alt="Shree Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">Shree Clinical Workflow 1.0.0</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="/admin/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info" sec:authorize="isAuthenticated()" >
+                <a href="#" class="d-block">
+                	<b><span sec:authentication="name">Username</span></b>
+                	 &nbsp;
+    <i><span sec:authentication="principal.authorities">Roles</span></i>
+                </a>
+            </div>
+                    
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class
+                     with font-awesome or any other icon font library -->
+
+                <li class="nav-item">
+                    <a href="/admin/dashboard" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/admin/registration/add" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Registration</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/admin/role/list" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Role</p>
+                    </a>
+                </li>
+				<li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/admin/user/list" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>User</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/admin/department/list" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Department</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/admin/personType/list" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Person Type</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN','ADMIN','RECEPTION1','RECEPTION2')">
+                    <a href="/admin/personalDetails/add" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Issue</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN','ADMIN','RECEPTION1','RECEPTION2')">
+                    <a href="/admin/personalDetails/delete" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Deposit</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN','ADMIN','RECEPTION1','RECEPTION2')">
+                    <a href="/admin/personalDetails/list" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Search</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/xls/CWReport3" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Head Count Report</p>
+                    </a>
+                </li>
+                 <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2','USER')">
+                    <a href="/xls/CWReport4" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Head Count Report</p>
+                    </a>
+                </li>
+                
+                 <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/xls/CWReport1" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Log In/Out Report</p>
+                    </a>
+                </li>
+                 <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2','USER')">
+                    <a href="/xls/CWReport2" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Log In/Out Report</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/admin/rfidTag/list" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>RFID Tag</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/admin/module/list" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Module</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript: document.logoutForm.submit()" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+	                    <p>Logout
+                        <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+							<input hidden type="submit" value="Logout" />
+						   </form>
+                        </p>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>

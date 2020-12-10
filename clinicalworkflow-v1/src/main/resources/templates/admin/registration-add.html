@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="admin/admin_layout">
+<head>
+<meta charset="UTF-8">
+<title>Registration</title>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+<body>
+
+	<div layout:fragment="content">
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1></h1>
+					</div>
+
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-12">
+						<!-- general form elements -->
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">Registration</h3>
+							</div>
+							<!-- /.card-header -->
+							<!-- form start -->
+							<form sec:authorize="hasAnyAuthority('SUPERADMIN')" role="form"
+								action="#" th:action="@{/admin/registration/save}"
+								th:object="${pd}" method="post">
+								<div class="card-body">
+									<div class="form-group">
+										<label for="personCode1">Person Type :</label> <select
+											th:field="*{personalDetails.personType.id}" class="form-control"
+											id="personType1">
+											<option value="default">Select a Person Type</option>
+											<option th:each="personType : ${allPersonTypes}"
+												th:value="${personType.id}" th:text="${personType.name}">
+											</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<div class="form-group" id="textBox"></div>
+									</div>
+
+								
+
+									<div class="form-group">
+										<label for="hexNo1">Rfid Hex No :</label> 
+										<input
+											th:field="*{rfidTag.rfidTagHexNo}" class="form-control"
+											type="text" id="rfidTagHexNo" name="rfidTagHexNo" />
+											  
+     
+									</div>
+									
+									<input type="hidden" id="activationDate" th:field="*{rfidTag.activationDate}"/>
+									<input type="hidden" id="status" th:field="*{rfidTag.status}"/>
+									
+								</div>
+								<!-- /.card-body -->
+
+								<div class="card-footer">
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</div>
+							</form>
+						</div>
+						<!-- /.card -->
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+	</div>
+
+	<th:block layout:fragment="script">
+		<script>
+			console.log("Add Registration");
+		</script>
+		<script type='text/javascript'>
+			function openSocket() {
+				var wsAddress = "[[${wsAddress}]]";
+				var wsPort = "[[${wsPort}]]";
+				var connection = new WebSocket('ws://'+wsAddress+':'+wsPort+'/echo',[ 'arduino' ]);
+				connection.onopen = function() {
+					console.log("Connected");
+				};
+				connection.onerror = function(error) {
+					console.log('WebSocket Error ', error);
+				};
+				connection.onmessage = function(e) {
+					if (e.data) {
+						var stateJSON = JSON.parse(e.data);
+						if (stateJSON.state) {
+							document.getElementById('rfidTagHexNo').value = stateJSON.state
+									+ '';
+							//document.getElementById('rfid').disabled=true;
+						}
+					}
+				};
+				return connection;
+			}
+			var connection = openSocket();
+		</script>
+		<script>
+			function myFunction(val) {
+
+			}
+		</script>
+		<script>
+			$(document)
+					.on(
+							"change",
+							"#personType1",
+							function() {
+
+								try {
+									var d_id = $('#personType1 option:selected')
+											.val();
+									var params = {
+										personTypeId : d_id
+									};
+									$
+											.ajax({
+												type : 'POST',
+												url : '/Ajax',
+												data : params,
+												success : function(responseJson) {
+													var jSON_res = JSON
+															.stringify(responseJson);
+													var count = jSON_res
+															.replace(null, "");
+													var text_val = "<label for='code'>Code :</label>  <input th:field='*{code}'  class='form-control' type='text' id ='code' name ='code'  value ="+count+" /> ";
+													$("#textBox").empty()
+															.append(text_val);
+													
+									
+												}//success function
+											});
+								} catch (err) {
+									alert("Exception  ::-- " + err);
+								}
+							});
+		</script>
+
+	</th:block>
+
+</body>
+</html>

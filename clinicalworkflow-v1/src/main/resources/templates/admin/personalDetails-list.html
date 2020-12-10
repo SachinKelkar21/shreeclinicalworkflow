@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="admin/admin_layout">
+<head>
+<meta charset="UTF-8">
+<title>Search</title>
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<form class="form-inline ml-3" th:action="@{/search}">
+							<div class="input-group input-group-sm">
+								<input class="form-control form-control-navbar" type="text"
+									placeholder="Search" aria-label="Search" name="keyword"
+									id="keyword" th:value="${keyword}" required>
+									
+								<input type="hidden"
+									 name="role"
+									id="role" th:value="${keyword}" required>	
+								<div class="input-group-append">
+									<button class="btn btn-navbar" type="submit" value="Search">
+										<i class="fas fa-search"></i>
+									</button>
+									<button class="btn btn-navbar" type="button" value="Clear"
+										id="btnClear" onclick="clearSearch()">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+							</div>
+						</form>
+
+					</div>
+					
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">Issued Tag List</h3>
+							</div>
+						</div>
+						<!-- /.card-header -->
+						<div class="card-body">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										
+										<th style="width: 10px">#</th>
+										<th>Tag Code</th>
+										<th>Issued Date</th>
+										<th>Assign Departments/Doors</th>
+										<th>Current Position</th>
+										<th>Permission</th>
+										<th>Log</th>
+										<th colspan="2"
+											sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')">Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr
+										th:each="personalDetails, iStat : ${personalDetailsPage.content}">
+										
+										<td th:text="${personalDetails.rfidTag.id}">ID</td>
+										<td th:text="${personalDetails.code}">Code</td>
+										<td th:text="${personalDetails.rfidTag.lastUpdated}">Date</td>
+										<td sec:authorize="hasAnyAuthority('ADMIN')">
+											<a
+											th:each="personDepartmentTag: ${personalDetails.personDepartmentTags}"
+											th:text="${personDepartmentTag.deactivationDate != ''} ?
+										      ' D'+${personDepartmentTag.module.doorNo}: ' D'+${personDepartmentTag.module.doorNo}">
+											</a>
+										</td>
+										<td sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2')">
+											<a
+											th:each="personDepartmentTag: ${personalDetails.personDepartmentTags}"
+											th:text="${personDepartmentTag.deactivationDate != ''} ?
+										      ${personDepartmentTag.department.name}+' ': ' D'+${personDepartmentTag.module.doorNo}">
+											</a>
+										</td>
+										
+										<td th:text="${personalDetails.currentPosition}">Current
+											Position</td>
+										<td th:text="${personalDetails.permission}">Permission</td>
+										<td th:text="${personalDetails.log}">Log</td>
+										<td sec:authorize="hasAnyAuthority('ADMIN')">
+										<a
+											th:href="@{'/admin/personalDetails/edit/' + ${personalDetails.id}}">Add
+												Doors</a></td>
+										<td sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2')">
+										<a
+											th:href="@{'/admin/personalDetails/edit/' + ${personalDetails.id}}">Add
+												Departments</a></td>		
+												
+										<td sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')"><a
+											th:href="@{'/admin/personalDetails/delete/' + ${personalDetails.id}}">Deposit</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<!-- /.card-body -->
+						<div class="card-footer clearfix">
+							<ul class="pagination pagination-sm m-0 float-right">
+								<li class="page-item"><a class="page-link"
+									th:href="@{/admin/personalDetails/list(size=${personalDetailsPage.size}, page=${personalDetailsPage.number-1})}">&lt;</a>
+								</li>
+								<li class="page-item"
+									th:if="${personalDetailsPage.totalPages > 0}"
+									th:each="pageNumber : ${pageNumbers}"><a class="page-link"
+									th:href="@{/admin/personalDetails/list(size=${personalDetailsPage.size}, page=${pageNumber})}"
+									th:text=${pageNumber}></a></li>
+								<li class="page-item"><a class="page-link"
+									th:href="@{/admin/personalDetails/list(size=${personalDetailsPage.size}, page=${personalDetailsPage.number+1})}">&gt;</a>
+								</li>
+							</ul>
+						</div>
+						<!-- /.card -->
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- Main content -->
+
+
+	</div>
+
+
+	<th:block layout:fragment="script">
+
+		<script
+			src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+		<script type="text/javascript">
+			function clearSearch() {
+				window.location = "[[@{/search}]]";
+			}
+		</script>
+
+	</th:block>
+
+</body>
+</html>

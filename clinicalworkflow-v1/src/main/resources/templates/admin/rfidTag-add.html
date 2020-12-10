@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/admin_layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Add RfidTag</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active"></li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Add RfidTag</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form sec:authorize="hasAnyAuthority('SUPERADMIN')" role="form" action="#" th:action="@{/admin/rfidTag/save}" th:object="${rfidTag}" method="post">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="rfidTagHexNo1">RfidTag Hex No</label>
+                                    <input type="text" class="form-control" id="rfidTagHexNo1" placeholder="Enter RfidTag HexNo" th:field="*{rfidTagHexNo}">
+                                </div>
+                            </div>
+                            
+                            <!-- /.card-body -->
+
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        console.log("Add RfidTag");
+    </script>
+</th:block>
+
+</body>
+</html>

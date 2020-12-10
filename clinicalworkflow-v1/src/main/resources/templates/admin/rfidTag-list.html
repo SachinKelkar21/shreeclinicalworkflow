@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="admin/admin_layout">
+<head>
+<meta charset="UTF-8">
+<title>List RfidTag</title>
+</head>
+<body>
+
+
+	<div layout:fragment="content">
+
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>RfidTag Management</h1>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item">
+								<div sec:authorize="hasAnyAuthority('SUPERADMIN')">
+									<a href="/admin/rfidTag/add">Create New RfidTag</a>
+								</div>
+							</li>
+							<br />
+							<br />
+							<li class="breadcrumb-item active"></li>
+						</ol>
+					</div>
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">RfidTag List</h3>
+							</div>
+						</div>
+						<!-- /.card-header -->
+						<div class="card-body">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th style="width: 10px">#</th>
+										<th>RfidTag HexNo</th>
+										<th sec:authorize="hasAnyAuthority('SUPERADMIN')">Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="rfidTag, iStat : ${rfidTagPage.content}">
+										<td th:text="${rfidTag.id}">ID</td>
+										<td th:text="${rfidTag.rfidTagHexNo}">RfidTag HexNo</td>
+										<td sec:authorize="hasAnyAuthority('SUPERADMIN')"><a
+											th:href="@{'/admin/rfidTag/edit/' + ${rfidTag.id}}">Edit</a>
+											&nbsp;&nbsp;&nbsp;&nbsp; <a
+											sec:authorize="hasAuthority('SUPERADMIN')"
+											th:href="@{'/admin/rfidTag/delete/' + ${rfidTag.id}}">Delete</a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<!-- /.card-body -->
+						<div class="card-footer clearfix">
+							<ul class="pagination pagination-sm m-0 float-right">
+								<li class="page-item"><a class="page-link"
+									th:href="@{/admin/rfidTag/list(size=${rfidTagPage.size}, page=${rfidTagPage.number-1})}">&lt;</a>
+								</li>
+								<li class="page-item" th:if="${rfidTagPage.totalPages > 0}"
+									th:each="pageNumber : ${pageNumbers}"><a class="page-link"
+									th:href="@{/admin/rfidTag/list(size=${rfidTagPage.size}, page=${pageNumber})}"
+									th:text=${pageNumber}></a></li>
+								<li class="page-item"><a class="page-link"
+									th:href="@{/admin/rfidTag/list(size=${rfidTagPage.size}, page=${rfidTagPage.number+1})}">&gt;</a>
+								</li>
+							</ul>
+						</div>
+						<!-- /.card -->
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- Main content -->
+
+
+	</div>
+
+
+	<th:block layout:fragment="script">
+
+		<script
+			src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+		<script>
+			console.log("List RfidTag");
+			var rfidTag = {};
+
+			$(document)
+					.ready(
+							function() {
+
+								/** TODO: Function OnClick **/
+
+								/** TODO: Function **/
+
+								/** TODO: OnLoad **/
+								rfidTag.findAll = function() {
+
+									$
+											.ajax({
+												url : "http://localhost:1111/api/v1/rfidTag",
+												type : "GET",
+												beforeSend : function(xhr) {
+													xhr.setRequestHeader(
+															"Accept",
+															"application/json");
+													xhr.setRequestHeader(
+															"Content-Type",
+															"application/json");
+												},
+												success : function(data) {
+													console.log(data);
+													var event_data = '';
+													$.each(data.rfidTag, function(
+															index, value) {
+														/*console.log(value);*/
+														event_data += '<tr>';
+														event_data += '<td>'
+																+ value.name
+																+ '</td>';
+														event_data += '<td>'
+																+ value.id
+																+ '</td>';
+														event_data += '</tr>';
+													});
+													$("#list_table_json")
+															.append(event_data);
+
+												},
+												error : function(jqXHR,
+														textStatus, errorThrown) {
+													var responseText = jQuery
+															.parseJSON(jqXHR.responseText);
+													console.log(responseText);
+													console.log('Error: '
+															+ textStatus
+															+ ' - '
+															+ errorThrown);
+												}
+											});
+
+								};
+
+								rfidTag.findAll();
+
+							});
+		</script>
+	</th:block>
+
+</body>
+</html>
