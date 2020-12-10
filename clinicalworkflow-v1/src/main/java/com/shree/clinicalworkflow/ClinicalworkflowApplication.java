@@ -73,7 +73,7 @@ public class ClinicalworkflowApplication {
 		return new JRSwapFileVirtualizer(20, sf, true);
 	}
 */
-/*
+
 	@Bean
 	  public CommandLineRunner delete(
 			  UserRepository userRepository,
@@ -123,22 +123,22 @@ public class ClinicalworkflowApplication {
 	    	
 	    	  Set<Role> roles = new HashSet<Role>();
 	    	  Role role = new Role();
-	    	  role.setName("SUPERVISOR");
+	    	  role.setName("RECEPTION1");
 	    	  roles.add(role);
 	    	
 	    	  User user = new User();
-		      user.setName("vikas");
+		      user.setName("pritee");
 		      user.setPassword("$2a$10$tHZ8FmGpcWYPNZ.L/slxC.YrErsr6z0PrjX1UEMLxRpOKB1qnpZ2q");
 		      user.setEnabled(true);
 		      repository.save(user);
 	    	
 	    	  roles = new HashSet<Role>();
 	    	  role = new Role();
-	    	  role.setName("RECEPTION");
+	    	  role.setName("RECEPTION2");
 	    	  roles.add(role);
 	    	  
 	    	  user = new User();
-		      user.setName("sneha");
+		      user.setName("raju");
 		      user.setPassword("$2a$10$tHZ8FmGpcWYPNZ.L/slxC.YrErsr6z0PrjX1UEMLxRpOKB1qnpZ2q");
 		      user.setEnabled(true);
 		      user.setRoles(roles);
@@ -330,7 +330,7 @@ public class ClinicalworkflowApplication {
 	      };
 	  }
 	  //config2
-
+/*
 	  @Bean
 	  public CommandLineRunner insertDataForPersonTypeAndPersonDetailsMappingForPrCvVip(
 			  PersonTypeRepository personTypeRepository,
