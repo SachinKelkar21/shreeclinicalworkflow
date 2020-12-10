@@ -48,10 +48,11 @@ public class JasperController {
 	protected Logger logger = Logger.getLogger(JasperController.class.getName());
 	public static int count = 0;
 	
-	@Autowired
+	/*@Autowired
 	JRFileVirtualizer fv;
 	@Value("${directory}")
 	private String directory;
+	*/
 	
 	@Autowired
 	DataSource datasource;
@@ -111,7 +112,7 @@ public class JasperController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			fv.cleanup();
+			//fv.cleanup();
 			if (cc != null)
 				try {
 					cc.close();
