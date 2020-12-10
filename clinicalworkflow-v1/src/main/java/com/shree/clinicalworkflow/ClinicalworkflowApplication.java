@@ -53,14 +53,15 @@ import net.sf.jasperreports.engine.util.JRSwapFile;
 @SpringBootApplication
 public class ClinicalworkflowApplication {
 	
-	@Value("${directory}")
+/*	@Value("${directory}")
 	private String directory;
 
+*/
 	public static void main(String[] args) {
 		SpringApplication.run(ClinicalworkflowApplication.class, args);
 	}
 	
-		
+/*		
 	@Bean
 	JRFileVirtualizer fileVirtualizer() {
 		return new JRFileVirtualizer(100, directory);
@@ -71,7 +72,7 @@ public class ClinicalworkflowApplication {
 		JRSwapFile sf = new JRSwapFile(directory, 1024, 100);
 		return new JRSwapFileVirtualizer(20, sf, true);
 	}
-
+*/
 /*
 	@Bean
 	  public CommandLineRunner delete(
