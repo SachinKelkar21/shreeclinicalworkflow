@@ -44,7 +44,7 @@ limitations under the License.
 #include <LiquidCrystal_I2C.h>
 #include <WebSocketsServer.h>
 
-#define WS_PORT 81
+#define WS_PORT 3000
 #define SS_1_PIN  D4        
 #define RST_PIN D3
 #define NR_OF_READERS   1
@@ -67,7 +67,7 @@ const char* ssid = "ShreeAgency";
 const char* password = "8975766614";
 
 //Step2> Enter Reader Text
-String readerNo= "Receiption1";
+String readerNo= "SUPERADMIN";
 
 //Step3>Enter the static ip that you want to set
 IPAddress ip(192, 168, 0, 117); 

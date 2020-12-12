@@ -47,6 +47,7 @@ import com.shree.clinicalworkflow.domain.RfidTag;
 import com.shree.clinicalworkflow.domain.RfidTagStatus;
 import com.shree.clinicalworkflow.domain.Role;
 import com.shree.clinicalworkflow.domain.User;
+import com.shree.clinicalworkflow.dto.LogData;
 import com.shree.clinicalworkflow.dto.PersonDepartments;
 import com.shree.clinicalworkflow.repository.DepartmentRepository;
 import com.shree.clinicalworkflow.repository.ModuleRepository;
@@ -146,12 +147,41 @@ public class AdminPageController {
 	public String getWsPort() {
 		return wsPort;
 	}
-	@RequestMapping({"/admin/dashboard","/admin"})
-    public String dashboard(){
-		log.info("AdminPage");
-        return "admin/dashboard";
-    }
 
+	@RequestMapping({"/admin/dashboard","/admin"})
+    public ModelAndView dashboard(Model model,Authentication authentication){
+		log.info("dashboard");
+    	ModelAndView mav = new ModelAndView("admin/dashboard");
+    	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String access=null;
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+        {
+        	access="MODULE";
+        	List<LogData> logDatas=personDepartmentTagRepository.getLogCountByModuleAndLog(access);
+        	for (LogData logData : logDatas) {
+        		mav.addObject(logData.getLog() ,logData.getLogCount());
+    		}
+        
+        }
+        else
+        {
+        	access="DEPT";
+        	List<LogData> logDatas=personDepartmentTagRepository.getLogCountByDeptAndLog(access);
+        	for (LogData logData : logDatas) {
+        		mav.addObject(logData.getLog() ,logData.getLogCount());
+    		}
+        
+        }
+
+        List<PersonalDetails> personalDetailss = new ArrayList<PersonalDetails>();
+    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.ISSUE,access).forEach(personalDetailss::add);
+    	mav.addObject("issued",personalDetailss.size());
+    	personalDetailss = new ArrayList<PersonalDetails>();
+    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.DEPOSITE,access).forEach(personalDetailss::add);
+    	mav.addObject("deposited",personalDetailss.size());
+    		
+    	return mav;
+    }
     @RequestMapping({"/admin/user/list","/admin/user"})
     public String listUser(Model model,
     		@RequestParam("page") Optional<Integer> page, 

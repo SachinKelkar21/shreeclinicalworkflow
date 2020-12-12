@@ -130,6 +130,7 @@ public class ClinicalworkflowApplication {
 		      user.setName("pritee");
 		      user.setPassword("$2a$10$tHZ8FmGpcWYPNZ.L/slxC.YrErsr6z0PrjX1UEMLxRpOKB1qnpZ2q");
 		      user.setEnabled(true);
+		      user.setRoles(roles);
 		      repository.save(user);
 	    	
 	    	  roles = new HashSet<Role>();
@@ -176,9 +177,9 @@ public class ClinicalworkflowApplication {
 	    	}
 	      };
 	  }
-	  
+	 
     //config1
-
+/*
 	@Bean
 	  public CommandLineRunner insertDataForDepartmentModuleAndRfidReader(
 			  DepartmentRepository departmentRepository,
@@ -328,7 +329,7 @@ public class ClinicalworkflowApplication {
 	    		ne.printStackTrace();
 	    	}
 	      };
-	  }
+	  }*/
 	  //config2
 /*
 	  @Bean
