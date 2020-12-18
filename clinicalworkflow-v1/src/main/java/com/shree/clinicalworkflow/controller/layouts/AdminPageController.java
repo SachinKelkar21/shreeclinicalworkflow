@@ -154,7 +154,7 @@ public class AdminPageController {
     	ModelAndView mav = new ModelAndView("admin/dashboard");
     	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String access=null;
-        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+        if(userDetails.getAuthorities()!=null &&  (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")) ||  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))))
         {
         	access="MODULE";
         	List<LogData> logDatas=personDepartmentTagRepository.getLogCountByModuleAndLog(access);
@@ -163,7 +163,7 @@ public class AdminPageController {
     		}
         
         }
-        else
+        else 
         {
         	access="DEPT";
         	List<LogData> logDatas=personDepartmentTagRepository.getLogCountByDeptAndLog(access);
@@ -633,6 +633,15 @@ public class AdminPageController {
             return "admin/module-add";
         }
     	module.setRfidReaders(module.getRfidReaders());
+    	
+    	List<RfidReader> readers = new ArrayList<RfidReader>();
+    	for(RfidReader rfidReader:module.getRfidReaders())
+    	{
+    		readers.add(rfidReader);
+    		rfidReader.setModule(module);
+    	}
+    	module.setRfidReaders(readers);
+    	
     	moduleService.save(module);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -657,6 +666,7 @@ public class AdminPageController {
     	ModelAndView mav = new ModelAndView("admin/module-add");
     	RfidReader rfidReader = new RfidReader();
     	rfidReader.setActivationDate(new Date(System.currentTimeMillis()));
+    	rfidReader.setModule(module);
     	module.getRfidReaders().add(rfidReader);
     	rfidReader.setModule(module);
     	log.info("rfidReader"+rfidReader.getActivationDate());    	

@@ -105,7 +105,7 @@ public class PersonalDetailsServiceImpl implements PersonalDetailsService {
 									&& rfidReader.getReaderNo()==readerNo.intValue())
 							{
 								access=true;
-								PersonDepartmentTagLog pl = new PersonDepartmentTagLog(authorisedRfid.getId() ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"GRANTED");
+								PersonDepartmentTagLog pl = new PersonDepartmentTagLog(authorisedRfid.getId() ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"GRANTED",personDepartmentTag.getId());
 								personDepartmentTagLogRepository.save(pl);
 								break;
 							}
@@ -138,7 +138,7 @@ public class PersonalDetailsServiceImpl implements PersonalDetailsService {
 											&& rfidReader.getReaderNo()==readerNo.intValue())
 									{
 										access=true;
-										PersonDepartmentTagLog pl = new PersonDepartmentTagLog(authorisedRfid.getId() ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"GRANTED");
+										PersonDepartmentTagLog pl = new PersonDepartmentTagLog(authorisedRfid.getId() ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"GRANTED",personDepartmentTag.getId());
 										personDepartmentTagLogRepository.save(pl);
 										break;
 									}
@@ -162,7 +162,7 @@ public class PersonalDetailsServiceImpl implements PersonalDetailsService {
 				log.info("1:"+rfidReader);
 				log.info("1:"+rfidReader);
 				log.info("2:"+authorisedRfid.getId());
-				PersonDepartmentTagLog pl2 = new PersonDepartmentTagLog(authorisedRfid.getId() ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"DENIED");
+				PersonDepartmentTagLog pl2 = new PersonDepartmentTagLog(authorisedRfid.getId() ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"DENIED",null);
 				personDepartmentTagLogRepository.save(pl2);
 				authorisedRfid.setPermission("DENIED");
 				authorisedRfid.setLog(null);
@@ -182,7 +182,7 @@ public class PersonalDetailsServiceImpl implements PersonalDetailsService {
 		else
 		{
 			RfidReader rfidReader = rfidReaderRepository.getRfidReaderByDoorNoReaderNo(doorNo, readerNo);
-			PersonDepartmentTagLog pl2 = new PersonDepartmentTagLog(-1L ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"INVAID");
+			PersonDepartmentTagLog pl2 = new PersonDepartmentTagLog(-1L ,rfidReader.getModule().getId(), rfidReader.getId(),(Math.floorMod(rfidReader.getReaderNo(), 2L)!=0?"IN":"OUT"),"INVAID",null);
 			personDepartmentTagLogRepository.save(pl2);
 			
 		}

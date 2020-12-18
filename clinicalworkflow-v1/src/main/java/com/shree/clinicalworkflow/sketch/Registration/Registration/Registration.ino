@@ -66,13 +66,13 @@ String StrUID;
 const char* ssid = "ShreeAgency";
 const char* password = "8975766614";
 
-//Step2> Enter Reader Text
-String readerNo= "SUPERADMIN";
+//Step2> Enter Reader Text Role
+String readerNo= "ADMIN";
 
 //Step3>Enter the static ip that you want to set
-IPAddress ip(192, 168, 0, 117); 
+IPAddress ip(192,168, 0, 120); 
 IPAddress gateway(192, 168, 0, 1);
-IPAddress subnet(255, 255, 255, 0);
+IPAddress subnet(255, 255, 225, 0);
 WiFiServer wifiServer(80);
 
 void setup() 
@@ -234,4 +234,4 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
       //não implementado neste exemplo
       break;
   }
-}
+} 

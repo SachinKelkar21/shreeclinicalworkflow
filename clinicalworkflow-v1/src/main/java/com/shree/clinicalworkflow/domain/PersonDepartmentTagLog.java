@@ -20,6 +20,8 @@ public final class PersonDepartmentTagLog {
 	
 	private final Long rfidReaderId;
 	
+	private final Long personDepartmentTagId;
+	
 	private final String log;
 	
 	private final Long logTime;
@@ -33,6 +35,7 @@ public final class PersonDepartmentTagLog {
 		log=null;
 		logTime=null;
 		permission=null;
+		personDepartmentTagId=null;
 		
 	}
 	public PersonDepartmentTagLog(
@@ -40,12 +43,15 @@ public final class PersonDepartmentTagLog {
 			final Long moduleId,
 			final Long rfidReaderId,
 			final String log,
-			final String permission) {
+			final String permission,
+			final Long personDepartmentTagId
+			) {
 		this.tagId=tagId;
 		this.moduleId=moduleId;
 		this.rfidReaderId=rfidReaderId;
 		this.log=log;
 		this.logTime=System.currentTimeMillis();
 		this.permission=permission;
+		this.personDepartmentTagId=personDepartmentTagId;
 	}
 }

@@ -21,7 +21,7 @@
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-right">
 							<li class="breadcrumb-item">
-								<div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+								<div sec:authorize="hasAnyAuthority('SUPERADMIN')">
 									<a href="/admin/department/add">Create New Department</a>
 								</div>
 							</li>
@@ -52,14 +52,14 @@
 									<tr>
 										<th style="width: 10px">#</th>
 										<th>Name</th>
-										<th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">Actions</th>
+										<th sec:authorize="hasAnyAuthority('SUPERADMIN')">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr th:each="department, iStat : ${departmentPage.content}">
 										<td th:text="${department.id}">ID</td>
 										<td th:text="${department.name}">Name</td>
-										<td sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')"><a
+										<td sec:authorize="hasAnyAuthority('SUPERADMIN')"><a
 											th:href="@{'/admin/department/edit/' + ${department.id}}">Edit</a>
 											&nbsp;&nbsp;&nbsp;&nbsp; <a
 											sec:authorize="hasAuthority('ADMIN')"

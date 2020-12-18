@@ -73,7 +73,7 @@ public class ClinicalworkflowApplication {
 		return new JRSwapFileVirtualizer(20, sf, true);
 	}
 */
-
+/*
 	@Bean
 	  public CommandLineRunner delete(
 			  UserRepository userRepository,
@@ -177,7 +177,7 @@ public class ClinicalworkflowApplication {
 	    	}
 	      };
 	  }
-	 
+*/	 
     //config1
 /*
 	@Bean

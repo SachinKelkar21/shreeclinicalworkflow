@@ -19,7 +19,7 @@ public class PersonDepartmentTagController {
 	public PersonDepartmentTagController(PersonalDetailsService personalDetailsService) {
 		this.personalDetailsService=personalDetailsService;
 	}
-	@GetMapping("/request")
+	@PostMapping("/request")
 	public boolean getAccessForPersonDepartmentTag(
 			@RequestParam("tagId") final String tagId,
 			@RequestParam("doorNo") final Integer doorNo,

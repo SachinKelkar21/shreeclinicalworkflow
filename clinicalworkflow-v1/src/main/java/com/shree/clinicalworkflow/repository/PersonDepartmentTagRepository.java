@@ -57,6 +57,7 @@ public interface PersonDepartmentTagRepository extends CrudRepository<PersonDepa
 			" AND T1.id =T2.personType.id " + 
 			" AND T2.id =T3.personalDetails.id" +
 			" AND T2.log is not null " +
+			" AND T2.log = T7.log " +
 			" AND T3.deactivationDate IS NULL" + 
 			" AND T3.module.id =T5.id " + 
 			" AND T5.deactivationDate IS NULL" + 
@@ -79,7 +80,7 @@ public interface PersonDepartmentTagRepository extends CrudRepository<PersonDepa
 	List<LogData> getLogCountByModuleAndLog(
 			@Param("module") final String moduleId);
 	
-	@Query("SELECT  new com.shree.clinicalworkflow.dto.LogData(T7.log,COUNT(T7.log)) "+ 
+	@Query(" SELECT new com.shree.clinicalworkflow.dto.LogData(T7.log,COUNT(T7.tagId)) "+
 			" FROM com.shree.clinicalworkflow.domain.PersonType T1," + 
 			" com.shree.clinicalworkflow.domain.PersonalDetails T2," + 
 			" com.shree.clinicalworkflow.domain.PersonDepartmentTag T3," + 
@@ -92,10 +93,12 @@ public interface PersonDepartmentTagRepository extends CrudRepository<PersonDepa
 			" AND T1.id =T2.personType.id " + 
 			" AND T2.id =T3.personalDetails.id" +
 			" AND T2.log is not null " +
+			" AND T2.log = T7.log " +
 			" AND T3.deactivationDate IS NULL" +
 			" AND T3.department.id=T4.department.id " +  
 			" AND T4.deactivationDate  IS NULL "+
-			" AND T4.module.id =T5.id "+
+			
+    		" AND T4.module.id =T5.id "+
 			" AND T5.deactivationDate IS NULL" + 
 			" AND T5.id =T8.module.id " +
 			" AND T8.module.doorNo=1 " +
@@ -112,7 +115,7 @@ public interface PersonDepartmentTagRepository extends CrudRepository<PersonDepa
 			"                                    AND S1.permission =T7.permission " + 
 			"                                    AND S1.tagId=T7.tagId" + 
 			"                                    GROUP BY S1.tagId )" + 
-			" GROUP BY T7.log ")
+			" GROUP BY T7.log ,T7.tagId ")
 	List<LogData> getLogCountByDeptAndLog(
 			@Param("module") final String moduleId);
 

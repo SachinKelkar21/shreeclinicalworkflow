@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/h2-console/**").permitAll()
 			.antMatchers("/personDeptTag/**").permitAll()
 			.antMatchers("/xls/**").permitAll()
-			.antMatchers("/").hasAnyAuthority("USER", "CREATOR", "EDITOR", "ADMIN","SUPERADMIN","RECEIPTION1","RECEIPTION2")
+			.antMatchers("/").hasAnyAuthority("USER", "CREATOR", "EDITOR", "ADMIN","SUPERADMIN","RECEPTION1","RECEPTION1")
 			.antMatchers("/new").hasAnyAuthority("ADMIN", "CREATOR")
 			.antMatchers("/edit/**").hasAnyAuthority("ADMIN", "EDITOR")
 			.antMatchers("/delete/**").hasAuthority("ADMIN")
