@@ -1,33 +1,26 @@
 package com.shree.clinicalworkflow.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.format.annotation.DateTimeFormat;
 import com.shree.clinicalworkflow.domain.Department;
 import com.shree.clinicalworkflow.domain.Module;
 import com.shree.clinicalworkflow.domain.PersonalDetails;
 import com.shree.clinicalworkflow.domain.RfidTag;
-import com.shree.clinicalworkflow.domain.RfidTagStatus;
-import com.shree.clinicalworkflow.repository.PersonalDetailsRepository;
-import com.shree.clinicalworkflow.service.PersonalDetailsService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class PersonDepartments {
 	private PersonalDetails personalDetails;
 	private RfidTag rfidTag;
 	private String code;
-	
-	@Autowired
-	private PersonalDetailsRepository service;
-	
+	@DateTimeFormat(pattern = "MM/dd/yyyy h:mm a")
+    private Date fromDate;
+	@DateTimeFormat(pattern = "MM/dd/yyyy h:mm a")
+    private Date toDate;
+	private String reportName;
 	private List<Department> departments = new ArrayList<Department>();
 	private List<Module> modules = new ArrayList<Module>();
+	private List<PersonLog> personLogs = new ArrayList<PersonLog>();
 	
 	public PersonalDetails getPersonalDetails() {
 		return personalDetails;
@@ -59,6 +52,24 @@ public class PersonDepartments {
 	public List<Module> getModules() {
 		return modules;
 	}
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+	public Date getToDate() {
+		return toDate;
+	}
+	public Date getFromDate() {
+		return fromDate;
+	}
+	public void setReportName(String reportName) {
+		this.reportName = reportName;
+	}
+	public String getReportName() {
+		return reportName;
+	}
 	public static boolean isValidPersonDepartments(PersonDepartments personDepartments) {
 		
 	    return personDepartments != null
@@ -74,5 +85,11 @@ public class PersonDepartments {
 	   	      && personDepartments.getPersonalDetails()!=null 
 		      && personDepartments.getPersonalDetails().getRfidTag()!=null
 		      &&  !personDepartments.getPersonalDetails().getRfidTag().equals(rfidTagHexNo);   
+	}
+	public void setPersonLogs(List<PersonLog> personLogs) {
+		this.personLogs = personLogs;
+	}
+	public List<PersonLog> getPersonLogs() {
+		return personLogs;
 	}
 }

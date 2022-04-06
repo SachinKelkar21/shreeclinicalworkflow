@@ -8,10 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
+import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -22,7 +20,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +35,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.shree.clinicalworkflow.domain.Department;
+import com.shree.clinicalworkflow.domain.DepartmentModuleGroup;
 import com.shree.clinicalworkflow.domain.Module;
 import com.shree.clinicalworkflow.domain.PersonDepartmentTag;
 import com.shree.clinicalworkflow.domain.PersonType;
@@ -47,10 +45,12 @@ import com.shree.clinicalworkflow.domain.RfidTag;
 import com.shree.clinicalworkflow.domain.RfidTagStatus;
 import com.shree.clinicalworkflow.domain.Role;
 import com.shree.clinicalworkflow.domain.User;
-import com.shree.clinicalworkflow.dto.LogData;
+import com.shree.clinicalworkflow.dto.DepartmentModuleDTO;
 import com.shree.clinicalworkflow.dto.PersonDepartments;
+import com.shree.clinicalworkflow.repository.DepartmentModuleGroupRepository;
 import com.shree.clinicalworkflow.repository.DepartmentRepository;
 import com.shree.clinicalworkflow.repository.ModuleRepository;
+import com.shree.clinicalworkflow.repository.PersonDepartmentTagLogRepository;
 import com.shree.clinicalworkflow.repository.PersonDepartmentTagRepository;
 import com.shree.clinicalworkflow.repository.PersonTypeRepository;
 import com.shree.clinicalworkflow.repository.PersonalDetailsRepository;
@@ -67,10 +67,6 @@ import com.shree.clinicalworkflow.service.UserService;
 
 
 import lombok.extern.slf4j.Slf4j;
-
-/**
- * @author tola on 4/9/20
- **/
 @Slf4j
 @Controller
 public class AdminPageController {
@@ -104,7 +100,14 @@ public class AdminPageController {
 	private PersonDepartmentTagRepository personDepartmentTagRepository;
 	@Autowired
 	private ModuleRepository moduleRepository;
+	@Autowired
+	private PersonDepartmentTagLogRepository personDepartmentTagLogRepository;
+	@Autowired
+	private DepartmentModuleGroupRepository departmentModuleGroupRepository;
 	
+	@Value("${ws.address0}")
+	private String wsAddress0;
+		
 	@Value("${ws.address1}")
 	private String wsAddress1;
 	
@@ -144,6 +147,13 @@ public class AdminPageController {
 	public String getWsAddress1() {
 		return wsAddress1;
 	}
+	
+	public void setWsAddress0(String wsAddress0) {
+		this.wsAddress0 = wsAddress0;
+	}
+	public String getWsAddress0() {
+		return wsAddress0;
+	}
 	public String getWsPort() {
 		return wsPort;
 	}
@@ -154,30 +164,35 @@ public class AdminPageController {
     	ModelAndView mav = new ModelAndView("admin/dashboard");
     	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String access=null;
-        if(userDetails.getAuthorities()!=null &&  (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")) ||  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))))
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
         {
-        	access="MODULE";
-        	List<LogData> logDatas=personDepartmentTagRepository.getLogCountByModuleAndLog(access);
-        	for (LogData logData : logDatas) {
-        		mav.addObject(logData.getLog() ,logData.getLogCount());
-    		}
+        	access="ADMIN";
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
+        {
+        	access="SUPERADMIN";
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+        {
+        	access="RECEPTION1";
+      
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+        {
+        	access="RECEPTION2";
         
         }
-        else 
-        {
-        	access="DEPT";
-        	List<LogData> logDatas=personDepartmentTagRepository.getLogCountByDeptAndLog(access);
-        	for (LogData logData : logDatas) {
-        		mav.addObject(logData.getLog() ,logData.getLogCount());
-    		}
         
-        }
-
+    	/*List<LogData> logDatas=personDepartmentTagLogRepository.getLogCountByModuleAndLog(access);
+    	for (LogData logData : logDatas) {
+    		mav.addObject(logData.getLog() ,logData.getLogCount());
+		}
+    	  */      
         List<PersonalDetails> personalDetailss = new ArrayList<PersonalDetails>();
-    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.ISSUE,access).forEach(personalDetailss::add);
+    //	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.ISSUE,access).forEach(personalDetailss::add);
     	mav.addObject("issued",personalDetailss.size());
     	personalDetailss = new ArrayList<PersonalDetails>();
-    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.DEPOSITE,access).forEach(personalDetailss::add);
+   // 	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.DEPOSITE,access).forEach(personalDetailss::add);
     	mav.addObject("deposited",personalDetailss.size());
     		
     	return mav;
@@ -186,6 +201,7 @@ public class AdminPageController {
     public String listUser(Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listUser");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<User> userPage = userService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
@@ -205,6 +221,7 @@ public class AdminPageController {
 
     @RequestMapping("/admin/user/add")
     public ModelAndView addUser(Model model){
+    	log.info("addUser");
     	ModelAndView mav = new ModelAndView("admin/user-add");
     	User user = new User();
     	user.setEnabled(true);
@@ -219,6 +236,7 @@ public class AdminPageController {
 							 Model model,
 				   		 	 @RequestParam("page") Optional<Integer> page, 
 				 	         @RequestParam("size") Optional<Integer> size) {
+    	log.info("save");    	
     	userService.save(user);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -236,6 +254,7 @@ public class AdminPageController {
 	}
     @RequestMapping("/admin/user/edit/{id}")
     public ModelAndView editUser(@PathVariable(name = "id") Long id){
+    	log.info("editUser");
     	ModelAndView mav = new ModelAndView("admin/user-edit");
     	mav.addObject("user", userService.get(id));
     	List<Role> roles = new ArrayList<Role>();
@@ -248,6 +267,7 @@ public class AdminPageController {
 				    		 Model model,
 				    		 @RequestParam("page") Optional<Integer> page, 
 				  	         @RequestParam("size") Optional<Integer> size){
+    	log.info("deleteUser");
     	userService.delete(id);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -266,6 +286,7 @@ public class AdminPageController {
     public String listRole(Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listRole");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<Role> rolePage = roleService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
@@ -285,6 +306,7 @@ public class AdminPageController {
 
     @RequestMapping("/admin/role/add")
     public ModelAndView addRole(Model model){
+    	log.info("addRole");
     	ModelAndView mav = new ModelAndView("admin/role-add");
     	Role role = new Role();
     	model.addAttribute("role",role);
@@ -296,6 +318,7 @@ public class AdminPageController {
 				    		Model model,
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size) {
+    	log.info("save");
     	roleService.save(role);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -314,6 +337,7 @@ public class AdminPageController {
 	}
     @RequestMapping("/admin/role/edit/{id}")
     public ModelAndView editRole(@PathVariable(name = "id") Long id){
+    	log.info("editRole");
     	ModelAndView mav = new ModelAndView("admin/role-edit");
     	mav.addObject("role", roleService.get(id));
     	List<Role> roles = new ArrayList<Role>();
@@ -327,6 +351,7 @@ public class AdminPageController {
     		Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("deleteRole");
     	roleService.delete(id);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -347,6 +372,7 @@ public class AdminPageController {
     public String listDepartment(Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listDepartment");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<Department> departmentPage = departmentService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
@@ -366,21 +392,58 @@ public class AdminPageController {
 
     @RequestMapping("/admin/department/add")
     public ModelAndView addDepartment(Model model){
+    	log.info("addDepartment");
     	ModelAndView mav = new ModelAndView("admin/department-add");
-    	Department department = new Department();
-    	department.setActivationDate(new Date(System.currentTimeMillis()));
+    	DepartmentModuleDTO department = new DepartmentModuleDTO();
+    	Department d = new Department();
+    	d.setActivationDate(new Date(System.currentTimeMillis()));
+    	department.setDepartment(d);
+    	department.setModules(new ArrayList<Module>());
+    	List<Module> modules = new ArrayList<Module>();
+    	moduleRepository.findAll().forEach(modules::add);
+    	mav.addObject("allModules",modules);
+
     	model.addAttribute("department",department);
-    	log.info("add");
         return mav;
     }
     @RequestMapping(value = "/admin/department/save", method = RequestMethod.POST)
-	public String saveDepartment(@ModelAttribute("department") Department department,
+	public String saveDepartment(@ModelAttribute("department") DepartmentModuleDTO department,
 				    		Model model,
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size) {
-    	log.info("save");
-    	departmentService.save(department);
-    	int currentPage = page.orElse(1);
+    	log.info("saveDepartment"+ department.getDepartment().getDepartmentModuleGroups().size());
+    	List<DepartmentModuleGroup> departmentModuleGroups = new ArrayList<DepartmentModuleGroup>();
+
+    	if(department.getDepartment()!=null
+    			&& department.getDepartment().getDepartmentModuleGroups()!=null
+    			&& department.getDepartment().getDepartmentModuleGroups().size()>0)
+    	{
+    		log.info("size > 0");
+    		for (Iterator iterator = department.getDepartment().getDepartmentModuleGroups().iterator(); iterator.hasNext();) {
+    			DepartmentModuleGroup departmentModuleGroup = (DepartmentModuleGroup) iterator.next();
+    			departmentModuleGroup.setDeactivationDate(new Date(System.currentTimeMillis()));
+    			departmentModuleGroups.add(departmentModuleGroup);
+			}
+    		departmentModuleGroupRepository.saveAll(departmentModuleGroups);
+    		
+    	}
+    	for (Iterator iterator = departmentModuleGroups.iterator(); iterator.hasNext();) 	
+    	{
+   		
+    		department.getDepartment().getDepartmentModuleGroups().remove((DepartmentModuleGroup) iterator.next());
+    	}
+    	for (Module module : department.getModules()) {
+			DepartmentModuleGroup departmentModuleGroup = new DepartmentModuleGroup();
+			departmentModuleGroup.setActivationDate(new Date(System.currentTimeMillis()));
+			departmentModuleGroup.setDepartment(department.getDepartment());
+			departmentModuleGroup.setModule(module);
+			departmentModuleGroups.add(departmentModuleGroup);
+    	}
+    	
+    	department.getDepartment().setDepartmentModuleGroups(departmentModuleGroups);
+    	departmentService.save(department.getDepartment());
+
+		int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<Department> departmentPage = departmentService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
         model.addAttribute("departmentPage", departmentPage);
@@ -397,11 +460,32 @@ public class AdminPageController {
 	}
     @RequestMapping("/admin/department/edit/{id}")
     public ModelAndView editDepartment(@PathVariable(name = "id") Long id){
+    	log.info("editDepartment"+departmentService.get(id).getDepartmentModuleGroups().size());
+    	
+    	DepartmentModuleDTO department = new DepartmentModuleDTO();
+    	Department d = departmentService.get(id);
+    	department.setDepartment(d);
+    	
+    	List<Module> modules = new ArrayList<Module>();
+    	
+    	for(DepartmentModuleGroup dmg :d.getDepartmentModuleGroups()) {
+    		modules.add(dmg.getModule());
+    		
+    	}
+    	department.setModules(modules);
+    	
+    	
     	ModelAndView mav = new ModelAndView("admin/department-edit");
-    	mav.addObject("department", departmentService.get(id));
+    	mav.addObject("department",department);
+    	
     	List<Department> departments = new ArrayList<Department>();
     	departments=departmentService.listAll();
     	mav.addObject("allDepartments",departments);
+    	
+    	modules = new ArrayList<Module>();
+    	moduleRepository.findAll().forEach(modules::add);
+    	mav.addObject("allModules",modules);
+    	
 		return mav;
     }
     @RequestMapping("/admin/department/delete/{id}")
@@ -410,6 +494,7 @@ public class AdminPageController {
     		Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("deleteDepartment");
     	departmentService.delete(id);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -430,6 +515,7 @@ public class AdminPageController {
     public String listPersonType(Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listPersonType");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<PersonType> personTypePage = personTypeService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
@@ -449,6 +535,7 @@ public class AdminPageController {
 
     @RequestMapping("/admin/personType/add")
     public ModelAndView addPersonType(Model model){
+    	log.info("addPersonType");
     	ModelAndView mav = new ModelAndView("admin/personType-add");
     	PersonType personType = new PersonType();
     	personType.setActivationDate(new Date(System.currentTimeMillis()));
@@ -461,6 +548,7 @@ public class AdminPageController {
 				    		Model model,
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size) {
+    	log.info("savePersonType");
     	personTypeService.save(personType);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -479,6 +567,7 @@ public class AdminPageController {
 	}
     @RequestMapping("/admin/personType/edit/{id}")
     public ModelAndView editPersonType(@PathVariable(name = "id") Long id){
+    	log.info("editPersonType");
     	ModelAndView mav = new ModelAndView("admin/personType-edit");
     	mav.addObject("personType", personTypeService.get(id));
     	List<PersonType> personTypes = new ArrayList<PersonType>();
@@ -492,6 +581,7 @@ public class AdminPageController {
     		Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("deletePersonType");
     	personTypeService.delete(id);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -514,6 +604,7 @@ public class AdminPageController {
     public String listRfidTag(Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listRfidTag");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<RfidTag> rfidTagPage = rfidTagService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
@@ -533,6 +624,7 @@ public class AdminPageController {
 
     @RequestMapping("/admin/rfidTag/add")
     public ModelAndView addRfidTag(Model model){
+    	log.info("addRfidTag");
     	ModelAndView mav = new ModelAndView("admin/rfidTag-add");
     	RfidTag rfidTag = new RfidTag();
     	rfidTag.setActivationDate(new Date(System.currentTimeMillis()));
@@ -545,6 +637,7 @@ public class AdminPageController {
 				    		Model model,
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size) {
+    	log.info("save");
     	rfidTagService.save(rfidTag);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -563,6 +656,7 @@ public class AdminPageController {
 	}
     @RequestMapping("/admin/rfidTag/edit/{id}")
     public ModelAndView editRfidTag(@PathVariable(name = "id") Long id){
+    	log.info("editRfidTag");
     	ModelAndView mav = new ModelAndView("admin/rfidTag-edit");
     	mav.addObject("rfidTag", rfidTagService.get(id));
     	List<RfidTag> rfidTags = new ArrayList<RfidTag>();
@@ -576,6 +670,7 @@ public class AdminPageController {
     		Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("deleteRfidTag");
     	rfidTagService.delete(id);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -596,6 +691,7 @@ public class AdminPageController {
     public String listModule(Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listModule");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<Module> modulePage = moduleService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
@@ -615,11 +711,11 @@ public class AdminPageController {
 
     @RequestMapping("/admin/module/add")
     public ModelAndView addModule(Model model){
+        log.info("addModule");
     	ModelAndView mav = new ModelAndView("admin/module-add");
     	Module module = new Module();
     	module.setActivationDate(new Date(System.currentTimeMillis()));
     	model.addAttribute("module",module);
-    	log.info("add");
         return mav;
     }
     @RequestMapping(value = "/admin/module",params={"save"}, method = RequestMethod.POST)
@@ -628,7 +724,7 @@ public class AdminPageController {
 				    		final BindingResult bindingResult,
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size) {
-    	log.info("save");
+    	log.info("saveModule");
     	if (bindingResult.hasErrors()) {
             return "admin/module-add";
         }
@@ -669,7 +765,6 @@ public class AdminPageController {
     	rfidReader.setModule(module);
     	module.getRfidReaders().add(rfidReader);
     	rfidReader.setModule(module);
-    	log.info("rfidReader"+rfidReader.getActivationDate());    	
     	model.addAttribute("module",module);
     	mav.addObject("module",module);
         return mav;
@@ -681,6 +776,7 @@ public class AdminPageController {
     		Model model,
     		final BindingResult bindingResult,
     		HttpServletRequest req) {
+    	log.info("removeRow");
     	ModelAndView mav = new ModelAndView("admin/module-add");
         final Integer rowId = Integer.valueOf(req.getParameter("removeRow"));
         module.getRfidReaders().remove(rowId.intValue());
@@ -690,6 +786,7 @@ public class AdminPageController {
     
     @RequestMapping("/admin/module/edit/{id}")
     public ModelAndView editModule(@PathVariable(name = "id") Long id){
+    	log.info("editModule");
     	ModelAndView mav = new ModelAndView("admin/module-edit");
     	mav.addObject("module", moduleService.get(id));
     	List<Module> modules = new ArrayList<Module>();
@@ -703,6 +800,7 @@ public class AdminPageController {
     		Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("deleteModule");
     	moduleService.delete(id);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -723,6 +821,7 @@ public class AdminPageController {
     public String listPersonDepartmentTag(Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listPersonDepartmentTag");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Page<PersonDepartmentTag> personDepartmentTagPage = personDepartmentTagService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
@@ -742,6 +841,7 @@ public class AdminPageController {
 
     @RequestMapping("/admin/personDepartmentTag/add")
     public ModelAndView addPersonDepartmentTag(Model model){
+    	log.info("addPersonDepartmentTag");
     	ModelAndView mav = new ModelAndView("admin/personDepartmentTag-add");
     	PersonDepartmentTag personDepartmentTag = new PersonDepartmentTag();
     	personDepartmentTag.setActivationDate(new Date(System.currentTimeMillis()));
@@ -754,6 +854,7 @@ public class AdminPageController {
 				    		Model model,
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size) {
+    	log.info("savePersonDepartmentTag");
     	personDepartmentTagService.save(personDepartmentTag);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -772,6 +873,7 @@ public class AdminPageController {
 	}
     @RequestMapping("/admin/personDepartmentTag/edit/{id}")
     public ModelAndView editPersonDepartmentTag(@PathVariable(name = "id") Long id){
+    	log.info("editPersonDepartmentTag");
     	ModelAndView mav = new ModelAndView("admin/personDepartmentTag-edit");
     	mav.addObject("personDepartmentTag", personDepartmentTagService.get(id));
     	List<PersonDepartmentTag> personDepartmentTags = new ArrayList<PersonDepartmentTag>();
@@ -785,6 +887,7 @@ public class AdminPageController {
     		Model model,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("deletePersonDepartmentTag");
     	personDepartmentTagService.delete(id);
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
@@ -807,18 +910,29 @@ public class AdminPageController {
     		Authentication authentication,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("listPersonalDetails");
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(7);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String access=null;
-        
-        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+   
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
         {
-        	access="MODULE";
+        	access="ADMIN";
         }
-        else
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
         {
-        	access="DEPT";
+        	access="SUPERADMIN";
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+        {
+        	access="RECEPTION1";
+      
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+        {
+        	access="RECEPTION2";
+        
         }
         Page<PersonalDetails> personalDetailsPage 
         = personalDetailsService.findPaginated(PageRequest.of(currentPage - 1, pageSize),RfidTagStatus.ISSUE,access,null);
@@ -836,6 +950,7 @@ public class AdminPageController {
     }
     @GetMapping("/admin/personalDetails/delete")
     public ModelAndView deletePersonalDetails(Model model,Authentication authentication){
+    	log.info("deletePersonalDetails");
     	ModelAndView mav = new ModelAndView("admin/personalDetails-delete");
     	PersonDepartments pd = new PersonDepartments();
     	PersonalDetails personalDetails = new PersonalDetails();
@@ -847,18 +962,26 @@ public class AdminPageController {
     	model.addAttribute("pd",pd);
     	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String access=null;
-        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
         {
-        	access="MODULE";
-        	model.addAttribute("wsAddress",getWsAddress2());
+        	access="ADMIN";
+        	model.addAttribute("wsAddress",getWsAddress1());
         }
-        else
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
         {
-        	access="DEPT";
-        	if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1")))
-        		model.addAttribute("wsAddress",getWsAddress3());
-        	else
-        		model.addAttribute("wsAddress",getWsAddress4());
+        	access="SUPERADMIN";
+        	model.addAttribute("wsAddress",getWsAddress0());
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+        {
+        	access="RECEPTION1";
+        	model.addAttribute("wsAddress",getWsAddress3());
+      
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+        {
+        	access="RECEPTION2";
+        	model.addAttribute("wsAddress",getWsAddress4());
         }
         model.addAttribute("wsPort",getWsPort());
     	List<PersonalDetails> personalDetailss = new ArrayList<PersonalDetails>();
@@ -878,6 +1001,7 @@ public class AdminPageController {
     }
     @GetMapping("/admin/personalDetails/add")
     public ModelAndView addPersonalDetails(Model model,Authentication authentication){
+    		log.info("addPersonalDetails");
 	    	ModelAndView mav = new ModelAndView("admin/personalDetails-add");
 	    	PersonDepartments pd = new PersonDepartments();
 	    	PersonalDetails personalDetails = new PersonalDetails();
@@ -889,21 +1013,28 @@ public class AdminPageController {
 	    	model.addAttribute("pd",pd);
 	    	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 	        String access=null;
-	        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+	        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
 	        {
-	        	access="MODULE";
-	        	model.addAttribute("wsAddress",getWsAddress2());
-	        	
+	        	access="ADMIN";
+	        	model.addAttribute("wsAddress",getWsAddress1());
 	        }
-	        else
+	        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
 	        {
-	        	access="DEPT";
-	        	if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1")))
-	        		model.addAttribute("wsAddress",getWsAddress3());
-	        	else
-	        		model.addAttribute("wsAddress",getWsAddress4());
-	        	
+	        	access="SUPERADMIN";
+	        	model.addAttribute("wsAddress",getWsAddress0());
 	        }
+	        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+	        {
+	        	access="RECEPTION1";
+	        	model.addAttribute("wsAddress",getWsAddress3());
+	      
+	        }
+	        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+	        {
+	        	access="RECEPTION2";
+	        	model.addAttribute("wsAddress",getWsAddress4());
+	        }
+
 	        model.addAttribute("wsPort",getWsPort());
 	    	List<PersonalDetails> personalDetailss = new ArrayList<PersonalDetails>();
 	    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.DEPOSITE,access).forEach(personalDetailss::add);
@@ -920,6 +1051,8 @@ public class AdminPageController {
 	        return mav;
 
     }
+    
+   
     @PostMapping(value = "/admin/personalDetails/save")
 	public RedirectView savePersonalDetails(@ModelAttribute("pd") PersonDepartments pd1,
 				    		Model model,
@@ -927,6 +1060,7 @@ public class AdminPageController {
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size,
 				  	        RedirectAttributes redirectAttributes) {
+    	log.info("savePersonalDetails");
     	
     	if (!PersonDepartments.isValidPersonDepartments(pd1)) {
     	
@@ -935,7 +1069,6 @@ public class AdminPageController {
         }
     	else
     	{	
-    		log.info("****"+pd1.getPersonalDetails().getRfidTag().getRfidTagHexNo());	
     	List<PersonDepartmentTag> personDepartmentTags = new ArrayList<PersonDepartmentTag>();
      	PersonalDetails personalDetails=personalDetailsRepository.getPersonalDetailsByRfidTagHexNo(pd1.getPersonalDetails().getRfidTag().getRfidTagHexNo());
      	if(pd1!=null && personalDetails!=null && personalDetails.getPersonDepartmentTags().size()>0)
@@ -1003,6 +1136,7 @@ public class AdminPageController {
 	}
     @GetMapping(value="/admin/personalDetails/success")
 	public String successPersonalDetails(HttpServletRequest request) {
+    	log.info("successPersonalDetails");
 	    Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
 	    if (inputFlashMap != null) {
 	        PersonDepartments personDepartments = (PersonDepartments) inputFlashMap.get("pd");
@@ -1013,6 +1147,7 @@ public class AdminPageController {
 	}
     @RequestMapping("/admin/personalDetails/edit/{id}")
     public ModelAndView editPersonalDetails(@PathVariable(name = "id") Long id,Authentication authentication){
+    	log.info("editPersonalDetails");
     	ModelAndView mav = new ModelAndView("admin/personalDetails-edit");
     	PersonDepartments pd = new PersonDepartments();
     	pd.setPersonalDetails(personalDetailsService.get(id));
@@ -1027,7 +1162,7 @@ public class AdminPageController {
     		}
         	pd.setModules(modules);
 
-        	access="MODULE";
+        	access="ADMIN";
         }
         else
         {
@@ -1039,7 +1174,19 @@ public class AdminPageController {
     		}
         	pd.setDepartments(departments);
 
-        	access="DEPT";
+        	if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
+	        {
+	        	access="SUPERADMIN";
+	        }
+	        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+	        {
+	        	access="RECEPTION1";
+	      
+	        }
+	        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+	        {
+	        	access="RECEPTION2";
+	        }
         }
 
     	mav.addObject("pd", pd);
@@ -1058,6 +1205,16 @@ public class AdminPageController {
 
 		return mav;
     }
+    @RequestMapping("/admin/personalDetails/log/{id}")
+    public ModelAndView logPersonalDetails(@PathVariable(name = "id") Long id,Authentication authentication){
+    	log.info("logPersonalDetails");
+    	ModelAndView mav = new ModelAndView("admin/personalDetails-log");
+    	PersonDepartments pd = new PersonDepartments();
+    	pd.setPersonLogs(personDepartmentTagLogRepository.getPersonLogByLogTime(System.currentTimeMillis()-(15*24*60*60*1000),System.currentTimeMillis(),id));
+    	mav.addObject("pd", pd);
+		return mav;
+    }
+
     @PostMapping(value = "/admin/personalDetails/deposit")
 	public RedirectView depositPersonalDetails(@ModelAttribute("pd") PersonDepartments pd1,
 				    		Model model,
@@ -1065,7 +1222,7 @@ public class AdminPageController {
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size,
 				  	        RedirectAttributes redirectAttributes) {
-    	
+    	log.info("depositPersonalDetails");
     	if (!PersonDepartments.isValidPersonDepartments(pd1)) {
     	
             return new RedirectView("/admin/personalDetails/delete", true);
@@ -1091,19 +1248,27 @@ public class AdminPageController {
     		Authentication authentication,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size){
+    	log.info("deletePersonalDetails");
     	personalDetailsService.delete(id);
     	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String access=null;
-        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
         {
-        	access="MODULE";
+        	access="ADMIN";
         }
-        else
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
         {
-        	access="DEPT";
+        	access="SUPERADMIN";
         }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+        {
+        	access="RECEPTION1";
 
-    	
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+        {
+        	access="RECEPTION2";
+        }
     	int currentPage = page.orElse(1);
         int pageSize = size.orElse(7);
         Page<PersonalDetails> personalDetailsPage = personalDetailsService.findPaginated(PageRequest.of(currentPage - 1, pageSize),RfidTagStatus.ISSUE,access,null);
@@ -1122,26 +1287,34 @@ public class AdminPageController {
     @RequestMapping("/search")
     public String viewSearch(Model model, 
     		@Param("keyword") String keyword,
+    		@Param("searchBy") String searchBy,
     		Authentication authentication,
     		@RequestParam("page") Optional<Integer> page, 
   	        @RequestParam("size") Optional<Integer> size) {
-    	log.info("********");     
-        log.info(keyword);
-        
+    	log.info("viewSearch"); 
     	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String access=null;
-        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
         {
-        	access="MODULE";
+        	access="ADMIN";
         }
-        else
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
         {
-        	access="DEPT";
+        	access="SUPERADMIN";
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+        {
+        	access="RECEPTION1";
+
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+        {
+        	access="RECEPTION2";
         }
 
      	int currentPage = page.orElse(1);
         int pageSize = size.orElse(7);
-        Page<PersonalDetails> personalDetailsPage = personalDetailsService.findPaginated(PageRequest.of(currentPage - 1, pageSize),RfidTagStatus.ISSUE,access,keyword);
+        Page<PersonalDetails> personalDetailsPage = personalDetailsService.findPaginated(PageRequest.of(currentPage - 1, pageSize),RfidTagStatus.ISSUE,access,keyword,searchBy);
         model.addAttribute("personalDetailsPage", personalDetailsPage);
        	model.addAttribute("keyword", keyword);
         int totalPages = personalDetailsPage.getTotalPages();
@@ -1158,6 +1331,7 @@ public class AdminPageController {
 
     @GetMapping("/admin/registration/add")
     public ModelAndView addRegistration(Model model,Authentication authentication){
+    	log.info("addRegistration");
     	ModelAndView mav = new ModelAndView("admin/registration-add");
     	PersonDepartments personDepartments = new PersonDepartments();
     	PersonalDetails personalDetails = new PersonalDetails();
@@ -1173,6 +1347,9 @@ public class AdminPageController {
 		personalDetails.setEmail(" ");
 		personalDetails.setCode(" ");
 		personalDetails.setPersonType(new PersonType());
+		personalDetails.setLoginCheck(Boolean.FALSE);
+		personalDetails.setAccess("DENIED");
+		
     	RfidTag rfidTag = new RfidTag();
     	rfidTag.setActivationDate(new Date(System.currentTimeMillis()));
     	rfidTag.setStatus(RfidTagStatus.DEPOSITE);
@@ -1180,18 +1357,27 @@ public class AdminPageController {
     	personDepartments.setPersonalDetails(personalDetails);
     	personDepartments.setRfidTag(rfidTag);
     	model.addAttribute("pd",personDepartments);
-    	model.addAttribute("wsAddress",getWsAddress1());
+    	model.addAttribute("wsAddress",getWsAddress0());
     	model.addAttribute("wsPort",getWsPort());
     	
     	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String access=null;
-        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
         {
-        	access="MODULE";
+        	access="ADMIN";
         }
-        else
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
         {
-        	access="DEPT";
+        	access="SUPERADMIN";
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+        {
+        	access="RECEPTION1";
+
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+        {
+        	access="RECEPTION2";
         }
     	
         List<PersonType> personTypes = new ArrayList<PersonType>();
@@ -1201,11 +1387,75 @@ public class AdminPageController {
         return mav;
 
     }
+    @GetMapping("/admin/registration/edit")
+    public ModelAndView editRegistration(Model model,Authentication authentication){
+    	log.info("editRegistration");
+    	ModelAndView mav = new ModelAndView("admin/registration-edit");
+    	PersonDepartments personDepartments = new PersonDepartments();
+    	PersonalDetails personalDetails = new PersonalDetails();
+    	personalDetails.setIntials(" ");
+		personalDetails.setFirstName(" ");
+		personalDetails.setMiddleName(" ");
+		personalDetails.setLastName(" ");
+		personalDetails.setAddress1(" ");
+		personalDetails.setAddress2(" ");
+		personalDetails.setAddress3(" ");
+		personalDetails.setMobileNo(0);
+		personalDetails.setAadharNo(0);
+		personalDetails.setEmail(" ");
+		personalDetails.setCode(" ");
+		personalDetails.setPersonType(new PersonType());
+		personalDetails.setLoginCheck(Boolean.FALSE);
+		personalDetails.setAccess("DENIED");
+		
+    	RfidTag rfidTag = new RfidTag();
+    	rfidTag.setDeactivationDate(new Date(System.currentTimeMillis()));
+    	rfidTag.setStatus(RfidTagStatus.DEPOSITE);
+    	
+    	personDepartments.setPersonalDetails(personalDetails);
+    	personDepartments.setRfidTag(rfidTag);
+    	model.addAttribute("pd",personDepartments);
+    	   	
+    	UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String access=null;
+        if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) 
+        {
+        	access="ADMIN";
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) 
+        {
+        	access="SUPERADMIN";
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION1"))) 
+        {
+        	access="RECEPTION1";
+
+        }
+        else if(userDetails.getAuthorities()!=null &&  userDetails.getAuthorities().contains(new SimpleGrantedAuthority("RECEPTION2"))) 
+        {
+        	access="RECEPTION2";
+        }
+        
+        
+        List<RfidTagStatus> rfidTagStatus = new ArrayList<RfidTagStatus>();
+        Stream.of(RfidTagStatus.values()).filter(d -> !(d.compareTo(RfidTagStatus.ISSUE)==0 || d.compareTo(RfidTagStatus.DEPOSITE)==0) ).forEach(rfidTagStatus::add);
+    	mav.addObject("allRfidTagStatus",rfidTagStatus);
+    	
+    	List<PersonalDetails> personalDetailss = new ArrayList<PersonalDetails>();
+    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.DEPOSITE,"ADMIN").forEach(personalDetailss::add);
+    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.DEPOSITE,"RECEPTION1").forEach(personalDetailss::add);
+    	personalDetailsRepository.getAllPersonalDetailsByRfidTagStatusDept(RfidTagStatus.DEPOSITE,"RECEPTION2").forEach(personalDetailss::add);
+    	
+    	mav.addObject("allPersonalDetailssDeposite",personalDetailss);
+    	
+        return mav;
+
+    }
+
     @RequestMapping(value="Ajax",method={ RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody String getPersonTypeCount(@RequestParam(value="personTypeId") Long personTypeId ) {
-    	
+    	log.info("getPersonTypeCount");
         String code =  personTypeService.get(personTypeId).getCode()+""+(personTypeService.get(personTypeId).getPersonalDetailsList().size()+1);
-        log.info(code);
         return code;
     }
     @PostMapping(value = "/admin/registration/save")
@@ -1215,8 +1465,8 @@ public class AdminPageController {
 				    		@RequestParam("page") Optional<Integer> page, 
 				  	        @RequestParam("size") Optional<Integer> size,
 				  	        RedirectAttributes redirectAttributes) {
+    	log.info("saveRegistration");
     	PersonalDetails personalDetails= personalDetailsRepository.getPersonalDetailsByRfidTagHexNo(pd.getRfidTag().getRfidTagHexNo());
-    	//log.info(""+personalDetails.getRfidTag().getRfidTagHexNo());
     	if (personalDetails!=null ) {
     		pd.getRfidTag().setRfidTagHexNo(null);
     		RedirectView redirectView = new RedirectView("/admin/registration/add", true);
@@ -1239,6 +1489,35 @@ public class AdminPageController {
         	redirectAttributes.addFlashAttribute("pd", pd);
             return new RedirectView("/admin/personalDetails/success", true);
     	}
+    }
+
+    @PostMapping(value = "/admin/registration/delete")
+	public RedirectView deleteRegistration(@ModelAttribute("pd") PersonDepartments pd,
+				    		Model model,
+				    		Authentication authentication,
+				    		@RequestParam("page") Optional<Integer> page, 
+				  	        @RequestParam("size") Optional<Integer> size,
+				  	        RedirectAttributes redirectAttributes) {
+    	log.info("deleteRegistration");
+       	PersonalDetails personalDetails= personalDetailsRepository.getPersonalDetailsByRfidTagHexNo(pd.getPersonalDetails().getRfidTag().getRfidTagHexNo());
+       	if (personalDetails==null ) {
+    		pd.getRfidTag().setRfidTagHexNo(null);
+    		RedirectView redirectView = new RedirectView("/admin/registration/edit", true);
+    		redirectView.addStaticAttribute("pd", pd);
+            return new RedirectView("/admin/registration/edit", true);
+            
+        }
+    	else
+    	{	
+    		
+    		personalDetails.getRfidTag().setDeactivationDate(new Date(System.currentTimeMillis()));
+    		personalDetails.getRfidTag().setStatus(pd.getRfidTag().getStatus());
+    		RfidTag rfidTag=rfidTagRepository.save(personalDetails.getRfidTag());
+    		pd.setPersonalDetails(personalDetails);
+        	redirectAttributes.addFlashAttribute("pd", pd);
+            return new RedirectView("/admin/personalDetails/success", true);
+    	}
     }	
+
     
 }

@@ -62,7 +62,7 @@
 										<td sec:authorize="hasAnyAuthority('SUPERADMIN')"><a
 											th:href="@{'/admin/department/edit/' + ${department.id}}">Edit</a>
 											&nbsp;&nbsp;&nbsp;&nbsp; <a
-											sec:authorize="hasAuthority('ADMIN')"
+											sec:authorize="hasAuthority('SUPERADMIN')"
 											th:href="@{'/admin/department/delete/' + ${department.id}}">Delete</a></td>
 									</tr>
 								</tbody>

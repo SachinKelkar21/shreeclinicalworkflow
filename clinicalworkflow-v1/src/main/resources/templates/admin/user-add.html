@@ -39,7 +39,7 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')" role="form" action="#" th:action="@{/admin/user/save}" th:object="${user}" method="post">
+                        <form sec:authorize="hasAnyAuthority('ADMIN')" role="form" action="#" th:action="@{/admin/user/save}" th:object="${user}" method="post">
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="userName1">User Name</label>

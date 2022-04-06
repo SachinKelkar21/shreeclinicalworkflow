@@ -16,26 +16,30 @@ import com.shree.clinicalworkflow.service.UserDetailsServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
+
+
+
+
+@Slf4j
 @Configuration
 @EnableWebSecurity
-@Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public UserDetailsService userDetailsService() {
-		log.info("WebSecurityConfig::userDetailsService");
+		log.info("userDetailsService");
 		return new UserDetailsServiceImpl();
 	}
 	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
-		log.info("WebSecurityConfig::passwordEncoder");
+		log.info("passwordEncoder");
 		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
-		log.info("WebSecurityConfig::authenticationProvider");
+		log.info("authenticationProvider");
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 		authProvider.setUserDetailsService(userDetailsService());
 		authProvider.setPasswordEncoder(passwordEncoder());
@@ -45,18 +49,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		log.info("WebSecurityConfig::configure:Auth");
+		log.info("configure:Auth");
 		auth.authenticationProvider(authenticationProvider());
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		log.info("WebSecurityConfig::configure:HttpSecu");
+		log.info("configure:HttpSecu");
 		http.authorizeRequests()
 			.antMatchers("/h2-console/**").permitAll()
 			.antMatchers("/personDeptTag/**").permitAll()
 			.antMatchers("/xls/**").permitAll()
-			.antMatchers("/").hasAnyAuthority("USER", "CREATOR", "EDITOR", "ADMIN","SUPERADMIN","RECEPTION1","RECEPTION1")
+			.antMatchers("/").hasAnyAuthority("USER","ADMIN","SUPERADMIN","RECEPTION1","RECEPTION2","ADMISSION")
 			.antMatchers("/new").hasAnyAuthority("ADMIN", "CREATOR")
 			.antMatchers("/edit/**").hasAnyAuthority("ADMIN", "EDITOR")
 			.antMatchers("/delete/**").hasAuthority("ADMIN")

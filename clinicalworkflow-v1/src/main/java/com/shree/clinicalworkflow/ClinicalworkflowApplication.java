@@ -1,79 +1,55 @@
 package com.shree.clinicalworkflow;
-
-import java.io.File;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.collections.IterableMap;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-
-import com.shree.clinicalworkflow.domain.Department;
-import com.shree.clinicalworkflow.domain.DepartmentModuleGroup;
-import com.shree.clinicalworkflow.domain.Module;
-import com.shree.clinicalworkflow.domain.PersonDepartmentTag;
-import com.shree.clinicalworkflow.domain.PersonType;
-import com.shree.clinicalworkflow.domain.PersonalDetails;
-import com.shree.clinicalworkflow.domain.RfidReader;
-import com.shree.clinicalworkflow.domain.RfidTag;
-import com.shree.clinicalworkflow.domain.RfidTagStatus;
-import com.shree.clinicalworkflow.domain.Role;
-
-import com.shree.clinicalworkflow.domain.User;
-import com.shree.clinicalworkflow.repository.DepartmentModuleGroupRepository;
-import com.shree.clinicalworkflow.repository.DepartmentRepository;
-import com.shree.clinicalworkflow.repository.ModuleRepository;
-import com.shree.clinicalworkflow.repository.PersonDepartmentTagRepository;
-import com.shree.clinicalworkflow.repository.PersonTypeRepository;
-import com.shree.clinicalworkflow.repository.PersonalDetailsRepository;
-import com.shree.clinicalworkflow.repository.RfidReaderRepository;
-import com.shree.clinicalworkflow.repository.RfidTagRepository;
-import com.shree.clinicalworkflow.repository.UserRepository;
-
+import org.springframework.scheduling.annotation.EnableScheduling;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.JRFileVirtualizer;
-import net.sf.jasperreports.engine.fill.JRSwapFileVirtualizer;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRSaver;
-import net.sf.jasperreports.engine.util.JRSwapFile;
 @Slf4j
+
 @SpringBootApplication
+@EnableScheduling
 public class ClinicalworkflowApplication {
-	
-/*	@Value("${directory}")
+
+	@Value("${directory}")
 	private String directory;
 
-*/
+
 	public static void main(String[] args) {
 		SpringApplication.run(ClinicalworkflowApplication.class, args);
 	}
 	
-/*		
+		
 	@Bean
 	JRFileVirtualizer fileVirtualizer() {
 		return new JRFileVirtualizer(100, directory);
 	}
 	
-	@Bean
-	JRSwapFileVirtualizer swapFileVirtualizer() {
-		JRSwapFile sf = new JRSwapFile(directory, 1024, 100);
-		return new JRSwapFileVirtualizer(20, sf, true);
-	}
-*/
-/*
+
+	/*
+ @Bean
+	  public CommandLineRunner delete(
+			  PersonDepartmentTagLogRepository personDepartmentTagLogRepository
+			  ) throws java.lang.NumberFormatException {
+	    return (args) -> {
+	      // save a few customers
+	    	try 
+	    	{
+	    		Calendar calendar = Calendar.getInstance();
+	    		calendar.add(Calendar.MONTH, -2);
+	    		java.sql.Date twoMonth = new java.sql.Date(calendar.getTimeInMillis());
+	    		System.out.println("******"+calendar.getTimeInMillis());
+	    		System.out.println("******"+twoMonth);
+	    		//personDepartmentTagLogRepository.delete(arg0);
+	    		log.info("Config0 : deletedd!");
+	    	}
+	    	catch(java.lang.NumberFormatException ne) {
+	    		ne.printStackTrace();
+	    	}
+	      };
+	  }
+
 	@Bean
 	  public CommandLineRunner delete(
 			  UserRepository userRepository,

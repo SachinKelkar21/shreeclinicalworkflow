@@ -21,7 +21,7 @@
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-right">
 							<li class="breadcrumb-item">
-								<div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+								<div sec:authorize="hasAnyAuthority('ADMIN')">
 									<a href="/admin/user/add">Create New User</a>
 								</div>
 							</li>
@@ -54,7 +54,7 @@
 										<th>Name</th>
 										<th style="width: 40px">Enabled</th>
 										<th>Roles</th>
-										<th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">Actions</th>
+										<th sec:authorize="hasAnyAuthority('ADMIN')">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -65,7 +65,7 @@
 											disabled /></td>
 										<td><a th:each="role: ${user.roles}"
 											th:text="${role.name}"></a></td>
-										<td sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')"><a
+										<td sec:authorize="hasAnyAuthority('ADMIN')"><a
 											th:href="@{'/admin/user/edit/' + ${user.id}}">Edit</a>
 											&nbsp;&nbsp;&nbsp;&nbsp; <a
 											sec:authorize="hasAuthority('ADMIN')"

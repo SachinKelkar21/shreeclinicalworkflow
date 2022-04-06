@@ -1,5 +1,6 @@
 package com.shree.clinicalworkflow.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.shree.clinicalworkflow.domain.Department;
+import com.shree.clinicalworkflow.domain.DepartmentModuleGroup;
+import com.shree.clinicalworkflow.domain.PersonDepartmentTag;
+import com.shree.clinicalworkflow.domain.PersonalDetails;
+import com.shree.clinicalworkflow.domain.RfidTagStatus;
 import com.shree.clinicalworkflow.repository.DepartmentRepository;
+
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 	@Autowired
@@ -33,7 +41,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public List<Department> listAll() {
 		// TODO Auto-generated method stub
 		List<Department> departments = new ArrayList<Department>();
-		departmentRepository.findAll().forEach(departments::add);
+		departmentRepository.getAllDepartmentExclusingAll().forEach(departments::add);
 	    return departments;
 	}
 
@@ -51,7 +59,16 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public void delete(Long id) {
-		departmentRepository.deleteById(id);
+		log.info("delete(id)");
+		Department department =this.get(id);
+		List<DepartmentModuleGroup> departmentModuleGroups = new ArrayList<DepartmentModuleGroup>();
+		 for (DepartmentModuleGroup departmentModuleGroup : department.getDepartmentModuleGroups()) {
+			 departmentModuleGroup.setDeactivationDate(new Date(System.currentTimeMillis()));
+			 departmentModuleGroups.add(departmentModuleGroup);
+		 }
+		 department.setDepartmentModuleGroups(departmentModuleGroups);
+		 department.setDeactivationDate(new Date(System.currentTimeMillis()));
+		 departmentRepository.save(department);
 
 	}
 	

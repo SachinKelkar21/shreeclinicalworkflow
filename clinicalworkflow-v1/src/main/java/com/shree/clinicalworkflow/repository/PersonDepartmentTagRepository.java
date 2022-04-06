@@ -1,16 +1,9 @@
 package com.shree.clinicalworkflow.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-
 import com.shree.clinicalworkflow.domain.PersonDepartmentTag;
-import com.shree.clinicalworkflow.domain.RfidTag;
-import com.shree.clinicalworkflow.domain.User;
-import com.shree.clinicalworkflow.dto.LogData;
-
 
 public interface PersonDepartmentTagRepository extends CrudRepository<PersonDepartmentTag, Long> {
 	@Query(" SELECT COUNT(rt.id) "
@@ -45,6 +38,7 @@ public interface PersonDepartmentTagRepository extends CrudRepository<PersonDepa
 	@Query("SELECT u FROM PersonDepartmentTag u WHERE u.id = :id")
     public PersonDepartmentTag getId(@Param("id") Long id);
 	
+	/*
 	@Query("SELECT  new com.shree.clinicalworkflow.dto.LogData(T7.log,COUNT(T7.log)) "+ 
 			" FROM com.shree.clinicalworkflow.domain.PersonType T1," + 
 			" com.shree.clinicalworkflow.domain.PersonalDetails T2," + 
@@ -118,5 +112,6 @@ public interface PersonDepartmentTagRepository extends CrudRepository<PersonDepa
 			" GROUP BY T7.log ,T7.tagId ")
 	List<LogData> getLogCountByDeptAndLog(
 			@Param("module") final String moduleId);
+	*/
 
 }

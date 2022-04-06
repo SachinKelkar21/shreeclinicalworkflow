@@ -1,7 +1,6 @@
 package com.shree.clinicalworkflow.domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -14,17 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-
 import org.hibernate.annotations.Where;
-
-import com.shree.clinicalworkflow.dto.PersonDepartments;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import lombok.ToString;
-
 
 @Entity
 public class PersonalDetails {
@@ -47,6 +36,8 @@ public class PersonalDetails {
     private String log;
 	private Long logTime;
 	private String permission;
+    private Boolean loginCheck;
+	private String access;
 	
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	@JoinColumn(name = "PERSON_TYPE_ID")
@@ -55,7 +46,7 @@ public class PersonalDetails {
 	@OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private RfidTag rfidTag;
 	
-	@OneToMany(cascade = CascadeType.ALL,mappedBy = "personalDetails", fetch = FetchType.EAGER )
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "personalDetails", fetch = FetchType.LAZY )
 	@Where(clause = " deactivation_date is null ") 
 	private List<PersonDepartmentTag> personDepartmentTags = new ArrayList<PersonDepartmentTag>();
 	
@@ -245,5 +236,23 @@ public class PersonalDetails {
 	      && personalDetails.getRfidTag()!=null
 	      && personalDetails.getRfidTag().getRfidTagHexNo()!=null;	
 		      
+	}
+
+
+
+	public Boolean getLoginCheck() {
+		return loginCheck;
+	}
+
+	public void setLoginCheck(Boolean loginCheck) {
+		this.loginCheck = loginCheck;
+	}
+
+	public String getAccess() {
+		return access;
+	}
+
+	public void setAccess(String access) {
+		this.access = access;
 	}
 }

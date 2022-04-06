@@ -24,7 +24,7 @@ public class PersonalDetailsServiceTest {
 
 	
 	
-	@Before
+	
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         personalDetailsService = new PersonalDetailsServiceImpl();

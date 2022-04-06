@@ -53,17 +53,31 @@
 									<div class="form-group">
 										<div class="form-group" id="textBox"></div>
 									</div>
-
-								
-
 									<div class="form-group">
 										<label for="hexNo1">Rfid Hex No :</label> 
 										<input
 											th:field="*{rfidTag.rfidTagHexNo}" class="form-control"
 											type="text" id="rfidTagHexNo" name="rfidTagHexNo" />
-											  
-     
+    
 									</div>
+									<div class="form-group">
+										<label for="loginCheck1">Login Check:</label>
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+										<input
+											th:field="*{personalDetails.loginCheck}" class="form-check-input"
+											type="checkbox" id="loginCheck" name="loginCheck" />
+    
+									</div>
+									<div class="form-group">
+										<label for="access1">Access :</label> 
+										<select
+											th:field="*{personalDetails.access}" class="form-control"
+											id="access1">
+											<option value="AUTHORIZED">Authorized</option>
+											<option value="DENIED">Denied</option>
+										</select>
+									</div>
+									
 									
 									<input type="hidden" id="activationDate" th:field="*{rfidTag.activationDate}"/>
 									<input type="hidden" id="status" th:field="*{rfidTag.status}"/>

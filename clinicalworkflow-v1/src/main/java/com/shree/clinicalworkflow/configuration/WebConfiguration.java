@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebConfiguration {
 
 	ServletRegistrationBean h2servletRegistration() {
-		log.info("WebConfiguration:: h2servletRegistration");
+		log.info("h2servletRegistration");
 		ServletRegistrationBean registrationBean
 			= new ServletRegistrationBean(new WebServlet());
 		registrationBean.addUrlMappings("/h2-console/*");

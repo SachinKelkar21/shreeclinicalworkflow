@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/admin_layout">
+<head>
+    <meta charset="UTF-8">
+    <title >Log</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1></h1>
+                </div>
+                
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">Log</h3>
+							</div>
+						</div>
+						<!-- /.card-header -->
+						<div class="card-body">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th>Date</th>
+										<th>Door</th>
+										<th>Log</th>
+										<th>Permission</th>
+																				
+									</tr>
+								</thead>
+								 
+							 	<tbody>
+									<tr th:each="personLog : ${pd.personLogs}">
+										<td th:text="${#dates.format(personLog.logDateTime, 'dd/MM/yyyy HH:mm')}">logDate</td>
+										<td th:text="${personLog.door}">doorNo</td>
+										<td th:text="${personLog.log}">log</td>
+										<td th:text="${personLog.permission}">permission</td>
+									</tr>
+								</tbody>
+								
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- Main content -->
+    
+
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        console.log("log");
+    </script>
+</th:block>
+
+</body>
+</html>

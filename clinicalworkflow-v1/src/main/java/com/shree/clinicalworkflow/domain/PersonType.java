@@ -12,14 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.Where;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-
 @Entity
 public class PersonType {
 	@Id
@@ -37,7 +29,9 @@ public class PersonType {
 	
 	private Date deactivationDate;
 	
-	@OneToMany(cascade = CascadeType.ALL,mappedBy = "personType", fetch = FetchType.EAGER )
+	private Boolean previousEntryCheck;
+	
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "personType", fetch = FetchType.LAZY )
 	
 	private List<PersonalDetails> personalDetailsList = new ArrayList<PersonalDetails>();
 	
@@ -96,5 +90,14 @@ public class PersonType {
 	public List<PersonalDetails> getPersonalDetailsList() {
 		return personalDetailsList;
 	}
+
+	public Boolean getPreviousEntryCheck() {
+		return previousEntryCheck;
+	}
+
+	public void setPreviousEntryCheck(Boolean previousEntryCheck) {
+		this.previousEntryCheck = previousEntryCheck;
+	}
+	
 	
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CWReport3" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ab44e59b-16a1-46d5-b0b1-c40c9718ce80">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalIssuedDeposited" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="ab44e59b-16a1-46d5-b0b1-c40c9718ce80">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="H2"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="472"/>
@@ -41,21 +41,26 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<parameter name="dept" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT NVL2( "RFID_TAG"."LAST_UPDATED","RFID_TAG"."LAST_UPDATED","RFID_TAG"."ACTIVATION_DATE") AS LAST_UPDATED,
+		<![CDATA[SELECT 
+FORMATDATETIME(
+NVL2( "RFID_TAG"."LAST_UPDATED","RFID_TAG"."LAST_UPDATED","RFID_TAG"."ACTIVATION_DATE")
+, 'yyyy-MM-dd')
+ AS LAST_UPDATED,
 	"RFID_TAG"."STATUS",
 	"RFID_TAG"."CODE",
-	"PERSON_TYPE"."DEPT"
+	"PERSON_TYPE"."NAME"
 FROM "PERSONAL_DETAILS"
 	INNER JOIN "RFID_TAG" ON 
 	 "PERSONAL_DETAILS"."RFID_TAG_RFID_TAG_ID" = "RFID_TAG"."RFID_TAG_ID" 
 	INNER JOIN "PERSON_TYPE" ON 
-	 "PERSONAL_DETAILS"."PERSON_TYPE_ID" = "PERSON_TYPE"."PERSON_TYPE_ID" AND "PERSON_TYPE"."DEPT" ='MODULE'
+	 "PERSONAL_DETAILS"."PERSON_TYPE_ID" = "PERSON_TYPE"."PERSON_TYPE_ID" AND "PERSON_TYPE"."DEPT" =$P{dept}
 WHERE 
 	 "RFID_TAG"."DEACTIVATION_DATE" IS NULL  
 ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 	</queryString>
-	<field name="LAST_UPDATED" class="java.sql.Date">
+	<field name="LAST_UPDATED" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="LAST_UPDATED"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="RFID_TAG"/>
 	</field>
@@ -67,18 +72,26 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 		<property name="com.jaspersoft.studio.field.label" value="CODE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="RFID_TAG"/>
 	</field>
+	<field name="NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="PERSON_TYPE"/>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="19" splitType="Stretch">
+		<band height="42" splitType="Stretch">
 			<staticText>
-				<reportElement x="4" y="0" width="545" height="19" uuid="8cb222f5-bb3d-4a42-a032-48c4f75583fe"/>
+				<reportElement x="2" y="0" width="545" height="19" uuid="8cb222f5-bb3d-4a42-a032-48c4f75583fe"/>
 				<textElement textAlignment="Center">
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[Staff Head Count Report]]></text>
+				<text><![CDATA[Total Issued /Deposited ]]></text>
 			</staticText>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="420" y="19" width="129" height="21" uuid="cd22639d-97c8-46e0-a814-80a1b8f50c08"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
@@ -97,13 +110,13 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="61" splitType="Stretch">
+		<band height="92" splitType="Stretch">
 			<crosstab>
-				<reportElement x="1" y="0" width="544" height="60" uuid="e4ab92c7-b05e-4d39-b7af-9bb74550de71">
+				<reportElement x="0" y="1" width="320" height="89" uuid="42e71610-35b6-4792-bb10-1f6c1bd2fb2f">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
 					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab_CH"/>
 					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab_CG"/>
+					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
 					<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab_CD"/>
 				</reportElement>
 				<crosstabDataset>
@@ -112,22 +125,23 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 				<crosstabHeaderCell>
 					<cellContents>
 						<staticText>
-							<reportElement x="0" y="0" width="80" height="20" uuid="e62b7554-5b26-41d0-bbd2-15f9609f3f29"/>
+							<reportElement x="0" y="0" width="200" height="20" uuid="53e6b520-bdaf-4642-a2b3-03d20e4a0925"/>
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
-							<text><![CDATA[DATE/STATUS]]></text>
+							<textElement textAlignment="Center"/>
+							<text><![CDATA[DATE/CATEGORY]]></text>
 						</staticText>
 					</cellContents>
 				</crosstabHeaderCell>
-				<rowGroup name="LAST_UPDATED" width="80" totalPosition="End">
-					<bucket class="java.sql.Date">
+				<rowGroup name="LAST_UPDATED" width="60" totalPosition="End">
+					<bucket class="java.lang.String">
 						<bucketExpression><![CDATA[$F{LAST_UPDATED}]]></bucketExpression>
 					</bucket>
 					<crosstabRowHeader>
 						<cellContents mode="Opaque" style="Crosstab_CH">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20" uuid="904c6aac-3db5-474c-b30b-e291462096bb"/>
+								<reportElement x="0" y="0" width="60" height="40" uuid="0372d649-f6d5-4bdd-8fd6-c12b16df351b"/>
 								<textFieldExpression><![CDATA[$V{LAST_UPDATED}]]></textFieldExpression>
 							</textField>
 						</cellContents>
@@ -135,20 +149,47 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 					<crosstabTotalRowHeader>
 						<cellContents mode="Opaque" style="Crosstab_CT">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="cce2cba7-bd27-4ee8-aac1-99b0c4d10349"/>
-								<text><![CDATA[Total LAST_UPDATED]]></text>
+								<reportElement x="0" y="0" width="200" height="20" forecolor="#FFFFFF" uuid="848c5e26-3b44-4611-b240-da4b85d77ddb"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[Total ]]></text>
 							</staticText>
 						</cellContents>
 					</crosstabTotalRowHeader>
 				</rowGroup>
-				<columnGroup name="STATUS" height="20" totalPosition="End" headerPosition="Center">
+				<rowGroup name="NAME" width="140" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{NAME}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField>
+								<reportElement x="0" y="0" width="140" height="20" uuid="0a0f508c-8b73-470d-8a9c-2bf826cf6e14">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textFieldExpression><![CDATA[$V{NAME}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CG">
+							<staticText>
+								<reportElement x="0" y="0" width="140" height="20" uuid="fd67ad4d-a342-4fbd-ab88-365d46570088"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[Total ]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="STATUS" height="20" totalPosition="End">
 					<bucket class="java.lang.Integer">
 						<bucketExpression><![CDATA[$F{STATUS}]]></bucketExpression>
 					</bucket>
 					<crosstabColumnHeader>
 						<cellContents mode="Opaque" style="Crosstab_CH">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="60" height="20" uuid="4f5447f4-5d68-49ac-add7-2089334780b0"/>
+							<textField>
+								<reportElement x="0" y="0" width="60" height="20" uuid="0661d273-bc93-4da6-bae5-f2ad565be656">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
 								<textElement textAlignment="Center"/>
 								<textFieldExpression><![CDATA[$V{STATUS}.equals(new Integer("1"))?"Deposited":"Issued"]]></textFieldExpression>
 							</textField>
@@ -157,7 +198,9 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 					<crosstabTotalColumnHeader>
 						<cellContents mode="Opaque" style="Crosstab_CT">
 							<staticText>
-								<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="a819f0f8-12a1-43f6-80e5-32e5d05b393d"/>
+								<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="6783fbcd-2c80-47e0-b975-c9d9199c04e3">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
 								<textElement textAlignment="Center"/>
 								<text><![CDATA[Total STATUS]]></text>
 							</staticText>
@@ -170,7 +213,9 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 				<crosstabCell width="60" height="20">
 					<cellContents mode="Opaque" style="Crosstab_CD">
 						<textField>
-							<reportElement x="0" y="0" width="60" height="20" uuid="bb15200b-c638-4791-9c40-0e5466f2066a"/>
+							<reportElement x="0" y="0" width="60" height="20" uuid="18d6d9e2-89b0-4faa-abe9-1d9dc448b34f">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							</reportElement>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$V{CODE_MEASURE}]]></textFieldExpression>
 						</textField>
@@ -179,7 +224,9 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 				<crosstabCell width="60" height="20" columnTotalGroup="STATUS">
 					<cellContents mode="Opaque" style="Crosstab_CT">
 						<textField>
-							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="b8e5a475-f1b6-4118-8622-2b638adf792b"/>
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="e06e6e75-598a-49bf-abfe-9413ae4d660a">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							</reportElement>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$V{CODE_MEASURE}]]></textFieldExpression>
 						</textField>
@@ -188,7 +235,9 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 				<crosstabCell width="60" height="20" rowTotalGroup="LAST_UPDATED">
 					<cellContents mode="Opaque" style="Crosstab_CT">
 						<textField>
-							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="f4e74b7b-c395-451b-bf93-0f73f2a02f36"/>
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="d9f3c4e6-7ed9-42c2-821b-80b5efad7260">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							</reportElement>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$V{CODE_MEASURE}]]></textFieldExpression>
 						</textField>
@@ -197,7 +246,29 @@ ORDER BY "RFID_TAG"."LAST_UPDATED" DESC]]>
 				<crosstabCell width="60" height="20" rowTotalGroup="LAST_UPDATED" columnTotalGroup="STATUS">
 					<cellContents mode="Opaque" style="Crosstab_CT">
 						<textField>
-							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="6be9ea74-41df-4d7d-ae08-e9d74892262c"/>
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="9c412474-37a1-4a5b-b98d-3865ce8a5233">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Center"/>
+							<textFieldExpression><![CDATA[$V{CODE_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="NAME">
+					<cellContents mode="Opaque" style="Crosstab_CG">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" uuid="7559070c-c56c-4349-af77-2c6a12182d18">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Center"/>
+							<textFieldExpression><![CDATA[$V{CODE_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="20" rowTotalGroup="NAME" columnTotalGroup="STATUS">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField>
+							<reportElement x="0" y="0" width="60" height="20" forecolor="#FFFFFF" uuid="0bccadf0-c144-44a0-8e7e-73dc29a3abda"/>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$V{CODE_MEASURE}]]></textFieldExpression>
 						</textField>

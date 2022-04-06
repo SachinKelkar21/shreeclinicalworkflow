@@ -13,5 +13,6 @@ public interface PersonDepartmentTagService {
 	public PersonDepartmentTag get(Long id) ;
 	public void delete(Long id) ;
 	public Page<PersonDepartmentTag> findPaginated(Pageable pageable) ;
+	 
 
 }

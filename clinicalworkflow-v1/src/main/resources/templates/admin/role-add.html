@@ -39,7 +39,7 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form sec:authorize="hasAnyAuthority('CREATOR', 'SUPERADMIN')" role="form" action="#" th:action="@{/admin/role/save}" th:object="${role}" method="post">
+                        <form sec:authorize="hasAnyAuthority('SUPERADMIN')" role="form" action="#" th:action="@{/admin/role/save}" th:object="${role}" method="post">
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="roleName1">Role Name</label>

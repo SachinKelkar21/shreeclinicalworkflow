@@ -1,6 +1,7 @@
 package com.shree.clinicalworkflow.service;
 
 import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import com.shree.clinicalworkflow.domain.Module;
 import com.shree.clinicalworkflow.repository.ModuleRepository;
+
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class ModuleServiceImpl implements ModuleService {
 	@Autowired
@@ -31,7 +35,7 @@ public class ModuleServiceImpl implements ModuleService {
 	
 	@Override
 	public List<Module> listAll() {
-		// TODO Auto-generated method stub
+	log.info("listAll");	
 		List<Module> modules = new ArrayList<Module>();
 		moduleRepository.findAll().forEach(modules::add);
 	    return modules;
@@ -39,24 +43,28 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Override
 	public void save(Module module) {
+		log.info("save");
 		moduleRepository.save(module);
 
 	}
 
 	@Override
 	public Module get(Long id) {
+		log.info("get(id)");
 		// TODO Auto-generated method stub
 		return moduleRepository.findById(id).get();
 	}
 
 	@Override
 	public void delete(Long id) {
+		log.info("delete");
 		moduleRepository.deleteById(id);
 
 	}
 	
 	@Override
 	public Page<Module> findPaginated(Pageable pageable) {
+		log.info("findPaginated");
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;

@@ -39,14 +39,20 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')" personType="form" action="#" th:action="@{/admin/personType/save}" th:object="${personType}" method="post">
+                        <form sec:authorize="hasAnyAuthority('SUPERADMIN')" personType="form" action="#" th:action="@{/admin/personType/save}" th:object="${personType}" method="post">
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="personTypeName1">PersonType Name</label>
                                     <input type="text" class="form-control" id="personTypeName1" placeholder="Enter PersonType Name" th:field="*{name}">
+                                    <label for="personTypeCode1"> Code</label>
+                                    <input type="text" class="form-control" id="personTypeCode1" placeholder="Enter PersonType Code" th:field="*{code}">
+                                    <label for="personTypeDept1"> Dept</label>
+                                    <input type="text" class="form-control" id="personTypeDept1" placeholder="Enter PersonType Dept" th:field="*{dept}">
+                                    <label for="personTypePreviousEntryCheck1"> Previous Entry Check </label>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" class="form-check-input" id="personTypePreviousEntryCheck1" placeholder="Enter PersonType PreviousEntryCheck " th:field="*{previousEntryCheck}"/>
                                 </div>
                             </div>
-                            
                             <!-- /.card-body -->
 
                             <div class="card-footer">

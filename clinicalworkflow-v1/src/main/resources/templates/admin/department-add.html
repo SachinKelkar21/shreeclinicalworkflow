@@ -39,13 +39,23 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')" department="form" action="#" th:action="@{/admin/department/save}" th:object="${department}" method="post">
+                        <form sec:authorize="hasAnyAuthority('SUPERADMIN')" department="form" action="#" th:action="@{/admin/department/save}" th:object="${department}" method="post">
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="departmentName1">Department Name</label>
-                                    <input type="text" class="form-control" id="departmentName1" placeholder="Enter Department Name" th:field="*{name}">
+                                    <input type="text" class="form-control" id="departmentName1" placeholder="Enter Department Name" th:field="*{department.name}">
+                                    <input type="hidden" th:field="*{department.activationDate}" />
                                 </div>
                             </div>
+                             <div class="form-group" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+									&nbsp;&nbsp;Door No : 
+									<input th:each="module : ${allModules}"
+										type="checkbox" name="module" th:value="${module.id}" th:field="*{modules}" 
+										th:text="'   D'+${module.doorNo}+'        '" >
+
+
+							</div>
+                         
                             
                             <!-- /.card-body -->
 

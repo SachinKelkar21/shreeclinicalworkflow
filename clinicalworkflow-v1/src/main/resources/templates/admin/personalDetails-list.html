@@ -20,6 +20,15 @@
 									placeholder="Search" aria-label="Search" name="keyword"
 									id="keyword" th:value="${keyword}" required>
 									
+								<select class="form-control form-control-navbar" id="searchBy" 
+								name="searchBy"
+								th:value="${searchBy}" required>
+										<option th:value="code">Code</option>
+										<option th:value="lastName" sec:authorize="hasAnyAuthority('ADMIN')">Last Name</option>
+										<option th:value="firstName" sec:authorize="hasAnyAuthority('ADMIN')">First Name</option>
+								</select>
+
+									
 								<input type="hidden"
 									 name="role"
 									id="role" th:value="${keyword}" required>	
@@ -57,25 +66,27 @@
 							<table class="table table-bordered">
 								<thead>
 									<tr>
-										
-										<th style="width: 10px">#</th>
-										<th>Tag Code</th>
-										<th>Issued Date</th>
-										<th>Assign Departments/Doors</th>
-										<th>Current Position</th>
-										<th>Permission</th>
-										<th>Log</th>
-										<th colspan="2"
-											sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')">Actions</th>
+										<th style="width: 2px">Tag Code</th>
+										<th style="width: 2px">Issued Date</th>
+										<th sec:authorize="hasAnyAuthority('ADMIN')" >First Name</th>
+										<th sec:authorize="hasAnyAuthority('ADMIN')" >Last Name</th>
+										<th sec:authorize="hasAnyAuthority('ADMIN')" >Assigned Doors</th>
+										<th sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2')">Assigned Departments</th>
+										<th style="width: 1px">Permission</th>
+										<th style="width: 1px">Current Position</th>
+										<th style="width: 1px">Log</th>
+										<th colspan="1" sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')">Actions[+/-]</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr
 										th:each="personalDetails, iStat : ${personalDetailsPage.content}">
 										
-										<td th:text="${personalDetails.rfidTag.id}">ID</td>
+										
 										<td th:text="${personalDetails.code}">Code</td>
 										<td th:text="${personalDetails.rfidTag.lastUpdated}">Date</td>
+										<td sec:authorize="hasAnyAuthority('ADMIN')" th:text="${personalDetails.firstName}">First Name</td>
+										<td sec:authorize="hasAnyAuthority('ADMIN')" th:text="${personalDetails.lastName}">Last Name</td>
 										<td sec:authorize="hasAnyAuthority('ADMIN')">
 											<a
 											th:each="personDepartmentTag: ${personalDetails.personDepartmentTags}"
@@ -83,30 +94,35 @@
 										      ' D'+${personDepartmentTag.module.doorNo}: ' D'+${personDepartmentTag.module.doorNo}">
 											</a>
 										</td>
-										<td sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2')">
+										<td sec:authorize="hasAnyAuthority('ADMISSION','RECEPTION1','RECEPTION2')">
 											<a
 											th:each="personDepartmentTag: ${personalDetails.personDepartmentTags}"
 											th:text="${personDepartmentTag.deactivationDate != ''} ?
 										      ${personDepartmentTag.department.name}+' ': ' D'+${personDepartmentTag.module.doorNo}">
 											</a>
 										</td>
+																				<td th:text="${personalDetails.permission}">Permission</td>
+										<td th:text="${personalDetails.currentPosition}">Current Position</td>
 										
-										<td th:text="${personalDetails.currentPosition}">Current
-											Position</td>
-										<td th:text="${personalDetails.permission}">Permission</td>
-										<td th:text="${personalDetails.log}">Log</td>
+										<td>
+											<a th:text="${personalDetails.log}" th:href="@{'/admin/personalDetails/log/' + ${personalDetails.id}}">
+											</a>	
+										</td>
+										
 										<td sec:authorize="hasAnyAuthority('ADMIN')">
 										<a
-											th:href="@{'/admin/personalDetails/edit/' + ${personalDetails.id}}">Add
-												Doors</a></td>
-										<td sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2')">
+											th:href="@{'/admin/personalDetails/edit/' + ${personalDetails.id}}">
+												Doors</a>
+									   </td>
+									   <td sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2')">
 										<a
-											th:href="@{'/admin/personalDetails/edit/' + ${personalDetails.id}}">Add
-												Departments</a></td>		
-												
+											th:href="@{'/admin/personalDetails/edit/' + ${personalDetails.id}}">Departments</a>
+									   </td>		
+										<!-- 		
 										<td sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')"><a
 											th:href="@{'/admin/personalDetails/delete/' + ${personalDetails.id}}">Deposit</a>
 										</td>
+										 -->
 									</tr>
 								</tbody>
 							</table>

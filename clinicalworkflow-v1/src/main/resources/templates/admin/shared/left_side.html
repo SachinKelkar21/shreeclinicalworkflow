@@ -44,6 +44,18 @@
                     </a>
                 </li>
                 <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/admin/registration/edit" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Unregistration</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+                    <a href="/personDeptTag/admin/database/backup" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Backup</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
                     <a href="/admin/role/list" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Role</p>
@@ -79,41 +91,78 @@
                         <p>Deposit</p>
                     </a>
                 </li>
-                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN','ADMIN','RECEPTION1','RECEPTION2')">
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')">
                     <a href="/admin/personalDetails/list" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Search</p>
                     </a>
                 </li>
                 <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
-                    <a href="/xls/CWReport3" class="nav-link">
+                    <a href="/xls/TotalIssuedDeposited/ADMIN" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Head Count Report</p>
+                        <p>Total Issued/Deposit Report</p>
                     </a>
                 </li>
-                 <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2','USER')">
-                    <a href="/xls/CWReport4" class="nav-link">
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION1')">
+                    <a href="/xls/TotalIssuedDeposited/RECEPTION1" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Head Count Report</p>
+                        <p>Total Issued/Deposit Report</p>
                     </a>
                 </li>
-                
-                 <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
-                    <a href="/xls/CWReport1" class="nav-link">
+                <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION2')">
+                    <a href="/xls/TotalIssuedDeposited/RECEPTION2" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Total Issued/Deposit Report</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/xls/ListIssuedDeposited/ADMIN" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>List Issued/Deposit Report</p>
+                    </a>
+                </li>
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION1')">
+                    <a href="/xls/ListIssuedDeposited/RECEPTION1" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>List Issued/Deposit Report</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION2')">
+                    <a href="/xls/ListIssuedDeposited/RECEPTION2" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>List Issued/Deposit Report</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')">
+                    <a href="/admin/personalDetails/CWReport1" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Log In/Out Report</p>
                     </a>
                 </li>
-                 <li class="nav-item" sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2','USER')">
-                    <a href="/xls/CWReport2" class="nav-link">
+                <!-- 
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/admin/personalDetails/Presenty" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Log In/Out Report</p>
+                        <p> Presenty </p>
                     </a>
                 </li>
-                <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">
-                    <a href="/admin/rfidTag/list" class="nav-link">
+                 -->
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/admin/personalDetails/DailyInOut" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>RFID Tag</p>
+                        <p>Daily In/Out Report</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/admin/personalDetails/DailyInOut2" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Daily In/Out Report(Name)</p>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a href="/xls/HeadCount/ADMIN" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Head Count Report</p>
                     </a>
                 </li>
                 <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERADMIN')">

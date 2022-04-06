@@ -39,7 +39,7 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')" 
+                        <form sec:authorize="hasAnyAuthority('ADMIN')" 
                         	role="form" 
                         	action="#" 
                         	th:action="@{/admin/user/save}" 

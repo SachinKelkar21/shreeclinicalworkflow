@@ -35,13 +35,14 @@
 							</div>
 							<!-- /.card-header -->
 							<!-- form start -->
-							<form sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')"
+							<form sec:authorize="hasAnyAuthority('ADMIN','ADMISSION','RECEPTION1','RECEPTION2')"
 								role="form" action="#"
 								th:action="@{/admin/personalDetails/save}" th:object="${pd}"
 								method="post">
 								<div class="card-body">
 									<div class="form-group">
-										<label for="personCode1">Code</label> <select id="rfid"
+										<label for="personCode1">Code</label> 
+										<select id="rfid"
 											class="form-control"
 											th:field="*{personalDetails.rfidTag.rfidTagHexNo}">
 											<option value="-1" selected="selected">--</option>
@@ -65,7 +66,7 @@
 								</div>
 
 								<div class="form-group"
-									sec:authorize="hasAnyAuthority('RECEPTION1','RECEPTION2')">
+									sec:authorize="hasAnyAuthority('ADMISSION','RECEPTION1','RECEPTION2')">
 
 									<ul>
 										<li th:each="department : ${allDepartments}">

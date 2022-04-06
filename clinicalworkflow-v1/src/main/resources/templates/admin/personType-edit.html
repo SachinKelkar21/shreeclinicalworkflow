@@ -39,7 +39,7 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')" 
+                        <form sec:authorize="hasAnyAuthority('SUPERADMIN')" 
                         	role="form" 
                         	action="#" 
                         	th:action="@{/admin/personType/save}" 
@@ -53,6 +53,19 @@
                                 <div class="form-group">
                                     <label for="personTypeName1">PersonType Name</label>
                                     <input type="text" class="form-control" id="personTypeName1" th:field="*{name}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="personTypeCode1">Code</label>
+                                    <input type="text" class="form-control" id="personTypeCode1" th:field="*{code}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="personTypeDept1">Dept</label>
+                                    <input type="text" class="form-control" id="personTypeDept1" th:field="*{dept}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="personTypePreviousEntryCheck1">Previous Entry Check</label>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" class="form-check-input"  id="personTypePreviousEntryCheck1" th:field="*{previousEntryCheck}">
                                 </div>
                             </div>
                             <!-- /.card-body -->

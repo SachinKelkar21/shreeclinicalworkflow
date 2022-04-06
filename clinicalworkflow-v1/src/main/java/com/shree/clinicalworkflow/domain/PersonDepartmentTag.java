@@ -10,9 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
+import javax.transaction.Transactional;
 import org.hibernate.annotations.Where;
-
+@Transactional
 @Entity
 @Where(clause = " DEACTIVATION_DATE IS NULL ")
 public  class PersonDepartmentTag {
@@ -41,6 +41,8 @@ public  class PersonDepartmentTag {
 	private  Date activationDate;
 	
 	private  Date deactivationDate;
+	
+	private  Integer previousReaderNo;
 	
    
 	public PersonDepartmentTag() {
@@ -121,6 +123,14 @@ public  class PersonDepartmentTag {
 	}
 	public void setModule(Module module) {
 		this.module = module;
+	}
+	
+	public void setPreviousReaderNo(Integer previousReaderNo) {
+		this.previousReaderNo = previousReaderNo;
+	}
+	
+	public Integer getPreviousReaderNo() {
+		return previousReaderNo;
 	}
 
 }

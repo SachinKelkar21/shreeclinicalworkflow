@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="admin/admin_layout">
+<head>
+<meta charset="UTF-8">
+<title>In/Out Report</title>
+<link th:rel="stylesheet"
+	th:href="@{/assets/tempusdominus-bootstrap-4/tempusdominus-bootstrap-4.min.css}" />
+<link th:rel="stylesheet"
+	th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} " />
+<link th:rel="stylesheet"
+	th:href="@{/webjars/font-awesome/5.11.2/css/all.css} " />
+</head>
+<body>
+
+	<div layout:fragment="content">
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1></h1>
+					</div>
+
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+		<!-- Main content -->
+		<section class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<!-- left column -->
+					<div class="col-md-12">
+						<!-- general form elements -->
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">Daily In/Out Report</h3>
+							</div>
+							<!-- /.card-header -->
+							<!-- form start -->
+							<form
+								sec:authorize="hasAnyAuthority('ADMIN')"
+								role="form" action="#"
+								th:action="@{/admin/personalDetails/CWReport1/submit}"
+								th:object="${pd}" method="post">
+
+
+								<div class="form-group">
+									<label for="date">From Date:</label>
+									<div class="input-group date" id="datetimepicker1"
+										data-target-input="nearest">
+										<input type="text" class="form-control datetimepicker-input"
+											data-target="#datetimepicker1" th:field="*{fromDate}"
+											id="fromdate" placeholder="From Date" />
+										<div class="input-group-append" data-target="#datetimepicker1"
+											data-toggle="datetimepicker">
+											<div class="input-group-text">
+												<i class="fa fa-calendar-alt"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="date">To Date:</label>
+									<div class="input-group date" id="datetimepicker2"
+										data-target-input="nearest">
+										<input type="text" class="form-control datetimepicker-input"
+											data-target="#datetimepicker2" th:field="*{toDate}"
+											id="todate" placeholder="To Date" />
+										<div class="input-group-append" data-target="#datetimepicker2"
+											data-toggle="datetimepicker">
+											<div class="input-group-text">
+												<i class="fa fa-calendar-alt"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<input type="hidden" id="status" th:field="*{reportName}" />
+
+								<div class="card-footer">
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</div>
+							</form>
+						</div>
+						<!-- /.card -->
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+	</div>
+
+	<th:block layout:fragment="script">
+		<script>
+			console.log("Daily In/Out Report");
+		</script>
+
+		<script>
+			$.fn.datetimepicker.Constructor.Default = $.extend({},
+					$.fn.datetimepicker.Constructor.Default, {
+						icons : {
+							time : 'far fa-clock',
+							date : 'far fa-calendar',
+							up : 'fas fa-arrow-up',
+							down : 'fas fa-arrow-down',
+							previous : 'fas fa-chevron-left',
+							next : 'fas fa-chevron-right',
+							today : 'far fa-calendar-check-o',
+							clear : 'far fa-trash',
+							close : 'far fa-times'
+
+						}
+					});
+
+			$('#datetimepicker1').datetimepicker({
+				format : 'MM/dd/yyyy h:mm a'
+			});
+		</script>
+		<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+		<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+		<script th:src="@{/assets/moment/moment.min.js}"></script>
+		<script
+			th:src="@{/assets/tempusdominus-bootstrap-4/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+	</th:block>
+
+</body>
+</html>

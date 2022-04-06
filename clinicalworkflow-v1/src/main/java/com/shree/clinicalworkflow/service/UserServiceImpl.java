@@ -11,13 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.shree.clinicalworkflow.domain.Department;
 import com.shree.clinicalworkflow.domain.User;
 import com.shree.clinicalworkflow.repository.UserRepository;
-
-import lombok.extern.slf4j.Slf4j;
-@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 	@Autowired

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="HeadCount" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="b60180db-fbe3-40b7-ad81-4f889aa3e595">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="H2"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT LISTAGG(COALESCE(T2.CODE||'-'||NVL(T2.LOG,' ')||'-'||NVL(T2.CURRENT_POSITION,' ')   , 'null'), ', ') WITHIN GROUP (ORDER BY T1.PERSON_TYPE_ID ) AS CODE,COUNT(*)
+FROM PERSON_TYPE T1,PERSONAL_DETAILS T2,RFID_TAG T3
+WHERE T1.PERSON_TYPE_ID =T2.PERSON_TYPE_ID 
+AND T2.RFID_TAG_RFID_TAG_ID  =T3.RFID_TAG_ID  
+AND T3.DEACTIVATION_DATE  IS NULL
+AND T3.STATUS =0
+AND T2.LOG !='OUT' AND T2.CURRENT_POSITION !='D1'
+GROUP BY T1.PERSON_TYPE_ID
+ORDER BY T1.PERSON_TYPE_ID]]>
+	</queryString>
+	<field name="CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="CODE"/>
+	</field>
+	<field name="COUNT(*)" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="COUNT(*)"/>
+	</field>
+	<variable name="total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{COUNT(*)}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="be9d52a7-654e-4077-95db-a583b54491f2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[HEAD COUNT WITH CURRENT POSTION]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="32" splitType="Stretch">
+			<textField pattern="MMM d, yyyy h:mm:ss a z">
+				<reportElement x="280" y="0" width="275" height="30" uuid="719871c3-be41-4ad6-8186-01496edb6782"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="31" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="1" width="455" height="30" uuid="17296696-d3f7-416a-b526-936fd4e13959">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d267ce1e-271b-4859-90bf-d977cb6bc2a3"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[CURRENT POSITION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="1" width="100" height="30" uuid="6677a0b1-effd-4368-94ee-f31e98513737">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4dd67d26-3730-4c51-b86d-ceccc94d5372"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[COUNT]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Immediate">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="455" height="30" uuid="8297b153-200e-423f-a706-8b4a9efd116b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="898f5dc1-7a9f-4b4e-9136-7e1c1dac55ad"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{CODE}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="455" y="0" width="100" height="30" uuid="bb13709c-df00-4ec9-9cf6-cc5293f9b0c1">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="43e5dfde-a6ed-4e2f-9ba5-36a670b7827b"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{COUNT(*)}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement positionType="FixRelativeToBottom" x="455" y="0" width="100" height="30" uuid="875d06f4-8865-4997-baef-15ecbfd414e5"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="455" height="30" uuid="4d9e99a2-a7a5-4f6f-bc21-8d3176061510">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d267ce1e-271b-4859-90bf-d977cb6bc2a3"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[TOTAL OF COUNT]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+</jasperReport>

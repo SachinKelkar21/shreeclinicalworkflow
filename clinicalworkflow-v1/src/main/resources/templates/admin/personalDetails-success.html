@@ -18,6 +18,13 @@
 								<input class="form-control form-control-navbar" type="text"
 									placeholder="Search" aria-label="Search" name="keyword"
 									id="keyword" th:value="${keyword}" required>
+								<select class="form-control form-control-navbar" id="searchBy" 
+								name="searchBy"
+								th:value="${searchBy}" required>
+										<option th:value="code">Code</option>
+										<option th:value="lastName" sec:authorize="hasAnyAuthority('ADMIN')">Last Name</option>
+										<option th:value="firstName" sec:authorize="hasAnyAuthority('ADMIN')">First Name</option>
+								</select>	
 									
 								<input type="hidden"
 									 name="role"
@@ -47,18 +54,18 @@
 					<div class="col-md-12">
 						<div class="card card-primary">
 							<div class="card-header">
-								<h3 class="card-title" sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')" >Issued/Deposited  Tag </h3>
+								<h3 class="card-title" sec:authorize="hasAnyAuthority('ADMIN','ADMISSION','RECEPTION1','RECEPTION2')" >Issued/Deposited  Tag </h3>
 								<h3 class="card-title" sec:authorize="hasAnyAuthority('SUPERADMIN')">Registration of Tag </h3>
 								
 							</div>
 						</div>
 						<!-- /.card-header -->
 						<div class="card-body">
-							<h3 class="card-title" th:if="${pd}" sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2','SUPERADMIN')">
+							<h3 class="card-title" th:if="${pd}" sec:authorize="hasAnyAuthority('ADMIN','ADMISSION','RECEPTION1','RECEPTION2','SUPERADMIN')">
 							    <p th:text="'You have successfully submitted  - '+${pd.personalDetails.code}"/>
 							   
 							</h3>
-							<h3 th:unless="${pd}" sec:authorize="hasAnyAuthority('ADMIN','RECEPTION1','RECEPTION2')">
+							<h3 th:unless="${pd}" sec:authorize="hasAnyAuthority('ADMIN','ADMISSION','RECEPTION1','RECEPTION2')">
 							    Click <a th:href="@{/admin/personalDetails/list}"> here</a> to list.
 							</h3>
 						</div>

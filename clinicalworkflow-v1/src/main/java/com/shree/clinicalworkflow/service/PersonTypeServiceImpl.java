@@ -10,8 +10,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import com.shree.clinicalworkflow.domain.PersonType;
 import com.shree.clinicalworkflow.domain.PersonType;
 import com.shree.clinicalworkflow.repository.PersonTypeRepository;
 

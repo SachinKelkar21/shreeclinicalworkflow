@@ -39,7 +39,7 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')" 
+                        <form sec:authorize="hasAnyAuthority('SUPERADMIN')" 
                         	department="form" 
                         	action="#" 
                         	th:action="@{/admin/department/save}" 
@@ -48,14 +48,24 @@
                             <div class="card-body">
             					<div class="form-group">
                                     <label for="departmentId1">Department Id</label>
-                                    <input type="text" class="form-control" id="id1"  th:field="*{id}" readonly="readonly">
+                                    <input type="text" class="form-control" id="id1"  th:field="*{department.id}" readonly="readonly">
                                 </div>
                                 <div class="form-group">
                                     <label for="departmentName1">Department Name</label>
-                                    <input type="text" class="form-control" id="departmentName1" th:field="*{name}">
+                                    <input type="text" class="form-control" id="departmentName1" th:field="*{department.name}">
+                                    <input type="hidden" th:field="*{department.activationDate}" />
+                                    <input type="hidden" th:field="*{department}" />
                                 </div>
                             </div>
                             <!-- /.card-body -->
+                            <div class="form-group" sec:authorize="hasAnyAuthority('SUPERADMIN')">
+									&nbsp;&nbsp;Door No : 
+									<input th:each="module : ${allModules}"
+										type="checkbox" name="module" th:value="${module.id}" th:field="*{modules}" 
+										th:text="'   D'+${module.doorNo}+'        '" >
+
+
+							</div>
 
                             <div class="card-footer">
                                 <button type="submit" class="btn btn-primary">Submit</button>

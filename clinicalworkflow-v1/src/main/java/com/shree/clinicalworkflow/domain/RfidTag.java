@@ -1,23 +1,10 @@
 package com.shree.clinicalworkflow.domain;
 
 import java.sql.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.groups.Default;
-
-
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 @Entity
 public class RfidTag {

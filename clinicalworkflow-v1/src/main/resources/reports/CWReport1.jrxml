@@ -48,72 +48,39 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<parameter name="fromDate" class="java.util.Date"/>
+	<parameter name="toDate" class="java.util.Date"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT T1.NAME, T2.CODE,Get_Date(T7.LOG_TIME)  as DATE,'D'||T5.DOOR_NO AS DOOR_NO ,T7.LOG,Get_Time(T7.LOG_TIME) as TIME 
-FROM PERSON_TYPE T1,
-PERSONAL_DETAILS T2,
-PERSON_DEPARTMENT_TAG T3,
-MODULE T5,
-RFID_READER T8,
-PERSON_DEPARTMENT_TAG_LOG T7
-WHERE T1.DEACTIVATION_DATE IS NULL
-AND T1.DEPT ='MODULE'
-AND T1.PERSON_TYPE_ID =T2.PERSON_TYPE_ID 
-AND T2.PERSONAL_DETAILS_ID =T3.PERSONAL_DETAILS_ID
-AND T3.DEACTIVATION_DATE IS NULL
-AND T3.MODULE_ID =T5.MODULE_ID 
-AND T5.DEACTIVATION_DATE IS NULL
-AND T5.MODULE_ID =T8.MODULE_ID 
-AND T8.DEACTIVATION_DATE IS NULL
-AND T2.PERSONAL_DETAILS_ID = T7.TAG_ID 
-AND T7.PERMISSION IN ('GRANTED')
-AND T5.MODULE_ID=T7.MODULE_ID
-AND T8.RFID_READER_ID =T7.RFID_READER_ID
-AND T7.LOG='IN'
-AND T7.LOG_TIME=(SELECT MIN(LOG_TIME)
-                                    FROM PERSON_DEPARTMENT_TAG_LOG 
-                                    WHERE LOG =T7.LOG
-                                    AND Get_Date(LOG_TIME) =Get_Date(T7.LOG_TIME) 
-                                    AND MODULE_ID =T7.MODULE_ID 
-                                    AND PERMISSION =T7.PERMISSION 
-                                    AND RFID_READER_ID =T7.RFID_READER_ID 
-                                    AND TAG_ID=T7.TAG_ID
-                                     GROUP BY TAG_ID ,MODULE_ID ,RFID_READER_ID,LOG )
-GROUP BY T1.NAME, T2.CODE,Get_Date(T7.LOG_TIME) ,T5.DOOR_NO ,T7.LOG
-UNION
-SELECT T1.NAME, T2.CODE,Get_Date(T7.LOG_TIME)  as DATE,'D'||T5.DOOR_NO AS DOOR_NO ,T7.LOG,Get_Time(T7.LOG_TIME) as TIME 
-FROM PERSON_TYPE T1,
-PERSONAL_DETAILS T2,
-PERSON_DEPARTMENT_TAG T3,
-MODULE T5,
-RFID_READER T8,
-DEPARTMENT T6,
-PERSON_DEPARTMENT_TAG_LOG T7
-WHERE T1.DEACTIVATION_DATE IS NULL
-AND T1.DEPT ='MODULE'
-AND T1.PERSON_TYPE_ID =T2.PERSON_TYPE_ID 
-AND T2.PERSONAL_DETAILS_ID =T3.PERSONAL_DETAILS_ID
-AND T3.DEACTIVATION_DATE IS NULL
-AND T3.MODULE_ID =T5.MODULE_ID 
-AND T5.DEACTIVATION_DATE IS NULL
-AND T5.MODULE_ID =T8.MODULE_ID 
-AND T8.DEACTIVATION_DATE IS NULL
-AND T2.PERSONAL_DETAILS_ID = T7.TAG_ID 
-AND T7.PERMISSION IN ('GRANTED')
-AND T5.MODULE_ID=T7.MODULE_ID
-AND T8.RFID_READER_ID =T7.RFID_READER_ID
-AND T7.LOG='OUT'
-AND T7.LOG_TIME=(SELECT MAX(LOG_TIME)
-                                    FROM PERSON_DEPARTMENT_TAG_LOG 
-                                    WHERE LOG =T7.LOG
-                                    AND Get_Date(LOG_TIME) =Get_Date(T7.LOG_TIME) 
-                                    AND MODULE_ID =T7.MODULE_ID 
-                                    AND PERMISSION =T7.PERMISSION 
-                                    AND RFID_READER_ID =T7.RFID_READER_ID 
-                                    AND TAG_ID=T7.TAG_ID
-                                     GROUP BY TAG_ID ,MODULE_ID ,RFID_READER_ID,LOG    )
-GROUP BY T1.NAME, T2.CODE,Get_Date(T7.LOG_TIME) ,T5.DOOR_NO ,T7.LOG
-ORDER BY 1,2,3,4,6]]>
+		<![CDATA[SELECT NAME,CODE,DATE,DOOR_NO,LOG,TIME 
+FROM 
+(
+SELECT 
+(SELECT  NAME FROM PERSON_TYPE WHERE PERSON_TYPE_ID =(SELECT   S1.PERSON_TYPE_ID  FROM  PERSONAL_DETAILS S1  WHERE  S1.PERSONAL_DETAILS_ID =T1.TAG_ID) )AS NAME,
+(SELECT  DEPT FROM PERSON_TYPE WHERE PERSON_TYPE_ID =(SELECT   S1.PERSON_TYPE_ID  FROM  PERSONAL_DETAILS S1  WHERE  S1.PERSONAL_DETAILS_ID =T1.TAG_ID) )AS DEPT,
+(SELECT CODE FROM PERSONAL_DETAILS WHERE PERSONAL_DETAILS_ID =T1.TAG_ID) AS CODE,
+(SELECT DOOR_NO  FROM MODULE  WHERE MODULE_ID  =T1.MODULE_ID ) AS DOOR_NO ,
+DATE,
+LOG,
+TIME
+FROM 
+(
+SELECT TAG_ID ,MODULE_ID ,Get_Date(LOG_TIME)  AS DATE,LOG,Get_Time(MIN(LOG_TIME)) AS TIME
+FROM PERSON_DEPARTMENT_TAG_LOG 
+WHERE PERMISSION IN ('GRANTED')
+AND LOG='IN'
+AND Get_Date(LOG_TIME)  between FORMATDATETIME($P{fromDate}, 'yyyy-MM-dd')  and FORMATDATETIME($P{toDate}, 'yyyy-MM-dd')  
+GROUP BY TAG_ID ,MODULE_ID ,Get_Date(LOG_TIME),LOG 
+UNION ALL
+SELECT TAG_ID ,MODULE_ID ,Get_Date(LOG_TIME)  AS DATE,LOG,Get_Time(MAX(LOG_TIME)) AS TIME
+FROM PERSON_DEPARTMENT_TAG_LOG 
+WHERE PERMISSION IN ('GRANTED')
+AND LOG='OUT'
+AND Get_Date(LOG_TIME)  between FORMATDATETIME($P{fromDate}, 'yyyy-MM-dd')  and FORMATDATETIME($P{toDate}, 'yyyy-MM-dd')  
+GROUP BY TAG_ID ,MODULE_ID ,Get_Date(LOG_TIME),LOG
+ORDER BY 1,2,3
+) T1
+)
+WHERE DEPT='ADMIN']]>
 	</queryString>
 	<field name="NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="NAME"/>
@@ -126,12 +93,12 @@ ORDER BY 1,2,3,4,6]]>
 	<field name="DATE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="DATE"/>
 	</field>
-	<field name="DOOR_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.label" value="DOOR_NO"/>
-	</field>
 	<field name="LOG" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="LOG"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="PERSON_DEPARTMENT_TAG_LOG"/>
+	</field>
+	<field name="DOOR_NO" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="DOOR_NO"/>
 	</field>
 	<field name="TIME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="TIME"/>
@@ -140,10 +107,12 @@ ORDER BY 1,2,3,4,6]]>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="40" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement x="0" y="1" width="750" height="21" uuid="9a8821be-b9be-4d12-8f18-e7bdcbf8f7ad"/>
+				<reportElement x="0" y="0" width="750" height="20" uuid="9a8821be-b9be-4d12-8f18-e7bdcbf8f7ad">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Center">
 					<font size="14"/>
 				</textElement>
@@ -164,10 +133,10 @@ ORDER BY 1,2,3,4,6]]>
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="264" splitType="Stretch">
+		<band height="61" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<crosstab>
-				<reportElement x="0" y="30" width="750" height="60" uuid="e4df3c12-4d12-4668-8ad5-53cfaf510ba9">
+				<reportElement x="0" y="0" width="990" height="60" uuid="e4df3c12-4d12-4668-8ad5-53cfaf510ba9">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab_CH"/>
 					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab_CG"/>
@@ -179,9 +148,9 @@ ORDER BY 1,2,3,4,6]]>
 					<dataset resetType="Report"/>
 				</crosstabDataset>
 				<crosstabHeaderCell>
-					<cellContents>
+					<cellContents mode="Opaque" style="Crosstab_CD">
 						<staticText>
-							<reportElement x="0" y="0" width="120" height="40" uuid="b38cd28d-081a-4ae1-a39f-21d0a396e7b8"/>
+							<reportElement x="0" y="0" width="110" height="40" uuid="b38cd28d-081a-4ae1-a39f-21d0a396e7b8"/>
 							<box>
 								<pen lineWidth="0.5"/>
 							</box>
@@ -196,25 +165,23 @@ ORDER BY 1,2,3,4,6]]>
 					</bucket>
 					<crosstabRowHeader>
 						<cellContents mode="Opaque" style="Crosstab_CH">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="30" height="20" uuid="e136311c-9e80-40a3-bf5c-56b4b7092a98">
-									<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-									<property name="com.jaspersoft.studio.unit.width" value="px"/>
-								</reportElement>
-								<textElement textAlignment="Center"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="30" height="20" uuid="14953a0b-7f1d-42e4-8847-4f6dbb90658e"/>
+								<textElement textAlignment="Center">
+									<font size="9"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$V{CODE}]]></textFieldExpression>
 							</textField>
 						</cellContents>
 					</crosstabRowHeader>
 					<crosstabTotalRowHeader>
-						<cellContents mode="Opaque" style="Crosstab_CT">
-							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<cellContents mode="Opaque" style="Crosstab_CG">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						</cellContents>
 					</crosstabTotalRowHeader>
 				</rowGroup>
-				<rowGroup name="DATE" width="90" totalPosition="End">
+				<rowGroup name="DATE" width="80" totalPosition="End">
 					<bucket class="java.lang.String">
 						<bucketExpression><![CDATA[$F{DATE}]]></bucketExpression>
 					</bucket>
@@ -222,26 +189,28 @@ ORDER BY 1,2,3,4,6]]>
 						<cellContents mode="Opaque" style="Crosstab_CH">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="90" height="20" uuid="dadc4b39-298e-468e-baa3-48603e97a49d"/>
-								<textElement textAlignment="Center"/>
+								<reportElement x="0" y="0" width="80" height="20" uuid="dadc4b39-298e-468e-baa3-48603e97a49d"/>
+								<textElement textAlignment="Center">
+									<font size="9"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$V{DATE}]]></textFieldExpression>
 							</textField>
 						</cellContents>
 					</crosstabRowHeader>
 					<crosstabTotalRowHeader>
-						<cellContents mode="Opaque" style="Crosstab_CG"/>
+						<cellContents mode="Opaque" style="Crosstab_CT"/>
 					</crosstabTotalRowHeader>
 				</rowGroup>
 				<columnGroup name="DOOR_NO" height="20" totalPosition="End">
-					<bucket class="java.lang.String">
+					<bucket class="java.lang.Integer">
 						<bucketExpression><![CDATA[$F{DOOR_NO}]]></bucketExpression>
 					</bucket>
 					<crosstabColumnHeader>
 						<cellContents mode="Opaque" style="Crosstab_CH">
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="60" height="20" uuid="121b09a0-6a4d-48b7-a0b3-bfb661343492"/>
+								<reportElement x="0" y="0" width="40" height="20" uuid="121b09a0-6a4d-48b7-a0b3-bfb661343492"/>
 								<textElement textAlignment="Center"/>
-								<textFieldExpression><![CDATA[$V{DOOR_NO}]]></textFieldExpression>
+								<textFieldExpression><![CDATA["D"+$V{DOOR_NO}]]></textFieldExpression>
 							</textField>
 						</cellContents>
 					</crosstabColumnHeader>
@@ -258,7 +227,7 @@ ORDER BY 1,2,3,4,6]]>
 					<crosstabColumnHeader>
 						<cellContents mode="Opaque" style="Crosstab_CH">
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="60" height="20" uuid="31768ada-6679-4719-a6ce-fad7e6c8ad9b"/>
+								<reportElement x="0" y="0" width="40" height="20" uuid="31768ada-6679-4719-a6ce-fad7e6c8ad9b"/>
 								<textElement textAlignment="Center"/>
 								<textFieldExpression><![CDATA[$V{LOG}]]></textFieldExpression>
 							</textField>
@@ -273,50 +242,40 @@ ORDER BY 1,2,3,4,6]]>
 				<measure name="TIME_MEASURE" class="java.lang.String">
 					<measureExpression><![CDATA[$F{TIME}]]></measureExpression>
 				</measure>
-				<crosstabCell width="60" height="20">
+				<crosstabCell width="40" height="20">
 					<cellContents mode="Opaque" style="Crosstab_CD">
 						<textField isBlankWhenNull="true">
-							<reportElement x="0" y="0" width="60" height="20" uuid="79f9d3e8-515d-40d5-a2b8-2bdded355011"/>
-							<textElement textAlignment="Center"/>
+							<reportElement x="0" y="0" width="40" height="20" uuid="79f9d3e8-515d-40d5-a2b8-2bdded355011"/>
+							<textElement textAlignment="Center">
+								<font size="9"/>
+							</textElement>
 							<textFieldExpression><![CDATA[$V{TIME_MEASURE}]]></textFieldExpression>
 						</textField>
 					</cellContents>
 				</crosstabCell>
+				<crosstabCell width="0" height="20" columnTotalGroup="DOOR_NO">
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
+				</crosstabCell>
 				<crosstabCell width="0" height="20" columnTotalGroup="LOG">
 					<cellContents mode="Opaque" style="Crosstab_CG"/>
 				</crosstabCell>
-				<crosstabCell width="60" height="0" rowTotalGroup="DATE">
-					<cellContents mode="Opaque" style="Crosstab_CG"/>
-				</crosstabCell>
-				<crosstabCell width="0" height="0" rowTotalGroup="DATE" columnTotalGroup="LOG">
-					<cellContents mode="Opaque" style="Crosstab_CG"/>
-				</crosstabCell>
-				<crosstabCell width="0" height="20" columnTotalGroup="DOOR_NO">
+				<crosstabCell width="40" height="0" rowTotalGroup="DATE">
 					<cellContents mode="Opaque" style="Crosstab_CT"/>
 				</crosstabCell>
 				<crosstabCell width="0" height="0" rowTotalGroup="DATE" columnTotalGroup="DOOR_NO">
 					<cellContents mode="Opaque" style="Crosstab_CT"/>
 				</crosstabCell>
-				<crosstabCell width="60" height="0" rowTotalGroup="CODE">
+				<crosstabCell width="0" height="0" rowTotalGroup="DATE" columnTotalGroup="LOG">
 					<cellContents mode="Opaque" style="Crosstab_CT"/>
 				</crosstabCell>
+				<crosstabCell width="40" height="0" rowTotalGroup="CODE">
+					<cellContents mode="Opaque" style="Crosstab_CG"/>
+				</crosstabCell>
 				<crosstabCell width="0" height="0" rowTotalGroup="CODE" columnTotalGroup="DOOR_NO">
-					<cellContents mode="Opaque" style="Crosstab_CT">
-						<textField isBlankWhenNull="true">
-							<reportElement x="0" y="0" width="0" height="0" forecolor="#FFFFFF" uuid="14152f98-8b53-4267-8096-be088fcc4e97"/>
-							<textElement textAlignment="Center"/>
-							<textFieldExpression><![CDATA[$V{TIME_MEASURE}]]></textFieldExpression>
-						</textField>
-					</cellContents>
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
 				</crosstabCell>
 				<crosstabCell width="0" height="0" rowTotalGroup="CODE" columnTotalGroup="LOG">
-					<cellContents mode="Opaque" style="Crosstab_CT">
-						<textField isBlankWhenNull="true">
-							<reportElement x="0" y="0" width="0" height="0" forecolor="#FFFFFF" uuid="5c5c6c9b-f0d2-449c-8c12-df1f75bedba8"/>
-							<textElement textAlignment="Center"/>
-							<textFieldExpression><![CDATA[$V{TIME_MEASURE}]]></textFieldExpression>
-						</textField>
-					</cellContents>
+					<cellContents mode="Opaque" style="Crosstab_CG"/>
 				</crosstabCell>
 			</crosstab>
 		</band>

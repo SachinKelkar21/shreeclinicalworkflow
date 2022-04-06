@@ -63,15 +63,29 @@ byte readcard[4];
 char str[32] = "";
 String StrUID;
 //Step1> Enter Wifi id & pass
-const char* ssid = "ShreeAgency";
-const char* password = "8975766614";
+//const char* ssid = "CHIRAYU";
+//const char* password = "sachin1971";
+
+//const char* ssid = "ASUS_X00TD";
+//const char* password = "SHLOK111";
+
+//const char* ssid = "CT/MRI";
+//const char* password = "37885199";
+
+const char* ssid = "ICU";
+const char* password = "goldroof#4024";
+
 
 //Step2> Enter Reader Text Role
-String readerNo= "ADMIN";
+String readerNo= "ADMISSION";
+//String readerNo= "RECEIPTION1";
+//String readerNo= "RECEIPTION2";
 
 //Step3>Enter the static ip that you want to set
-IPAddress ip(192,168, 0, 120); 
-IPAddress gateway(192, 168, 0, 1);
+IPAddress ip(192,168, 1, 144); 
+//IPAddress ip(192,168, 1, 147); 
+//IPAddress ip(192,168, 1, 147); 
+IPAddress gateway(192, 168, 1, 5);
 IPAddress subnet(255, 255, 225, 0);
 WiFiServer wifiServer(80);
 

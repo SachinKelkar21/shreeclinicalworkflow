@@ -52,6 +52,9 @@
 									<tr>
 										<th style="width: 10px">#</th>
 										<th>Name</th>
+										<th>Code</th>
+										<th>Dept</th>
+										<th>Previous</th>
 										<th sec:authorize="hasAnyAuthority('SUPERADMIN')">Actions</th>
 									</tr>
 								</thead>
@@ -59,10 +62,13 @@
 									<tr th:each="personType, iStat : ${personTypePage.content}">
 										<td th:text="${personType.id}">ID</td>
 										<td th:text="${personType.name}">Name</td>
+										<td th:text="${personType.code}">Code</td>
+										<td th:text="${personType.dept}">Dept</td>
+										<td th:text="${personType.previousEntryCheck}">Previous</td>
 										<td sec:authorize="hasAnyAuthority('SUPERADMIN')"><a
 											th:href="@{'/admin/personType/edit/' + ${personType.id}}">Edit</a>
 											&nbsp;&nbsp;&nbsp;&nbsp; <a
-											sec:authorize="hasAuthority('ADMIN')"
+											sec:authorize="hasAuthority('SUPERADMIN')"
 											th:href="@{'/admin/personType/delete/' + ${personType.id}}">Delete</a></td>
 									</tr>
 								</tbody>
